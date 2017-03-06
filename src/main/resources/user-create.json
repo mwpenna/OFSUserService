@@ -1,0 +1,72 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "user",
+  "description": "JSON User Create",
+  "type" : "object",
+  "properties": {
+    "id": {
+      "not": {}
+    },
+    "href": {
+      "not": {}
+    },
+    "createdOn": {
+      "not": {}
+    },
+    "token": {
+      "not": {}
+    },
+    "tokenExpDate": {
+      "not": {}
+    },
+    "activeFlag": {
+      "not": {}
+    },
+    "firstName": {
+      "type": "string"
+    },
+    "lastName": {
+      "type": "string"
+    },
+    "company": {
+      "type": "object",
+      "properties": {
+        "href": {
+          "type": "string",
+          "pattern": "^(http|https):\/\/.*$"
+        },
+        "name": {
+          "type": "string"
+        },
+        "id": {
+          "type": "object"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "href", "name"
+      ]
+    },
+    "role": {
+      "type": "string",
+      "enum": [
+        "ADMIN",
+        "ACCOUNT_MANAGER",
+        "WAREHOUSE",
+        "CUSTOMER"
+      ]
+    },
+    "userName": {
+      "type": "string"
+    },
+    "password": {
+      "type": "string"
+    },
+    "emailAddress": {
+      "type": "string"
+    }
+  },
+  "required":["lastName", "company", "role", "userName", "password", "emailAddress"],
+  "additionalProperties": true
+}
+
