@@ -17,15 +17,15 @@ public class ValidateCompany implements UserCreateValidation {
 
     @Override
     public void validate(User user, OFSErrors errors) {
-        Optional<Company> company = companyRepository.getCompanyById(user.getCompany().getIdFromHref());
+        Optional<Company> optionalcompany = companyRepository.getCompanyById(user.getCompany().getIdFromHref());
 
-        if(!company.isPresent()) {
+        if(!optionalcompany.isPresent()) {
             errors.rejectValue("user.company.id.invalid", "company.id", "Invalid company id. Company does not exits.");
             return;
         }
         else {
+            Company company = optionalcompany.get();
             //TODO: Validate Authenticated User token company is same company as new user is being created for
-
         }
     }
 }
