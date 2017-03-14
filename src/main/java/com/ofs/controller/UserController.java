@@ -6,6 +6,8 @@ import com.ofs.server.OFSController;
 import com.ofs.server.OFSServerId;
 import com.ofs.server.form.OFSServerForm;
 import com.ofs.server.form.ValidationSchema;
+import com.ofs.server.model.OFSErrors;
+import com.ofs.validators.UserCreateValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -25,11 +27,18 @@ public class UserController {
     @Autowired
     UserRepository userRepository;
 
+    @Autowired
+    UserCreateValidator userCreateValidator;
+
     @ValidationSchema(value = "/user-create.json")
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity create(@OFSServerId URI id, OFSServerForm<User> form) throws IOException{
         User user = form.create(id);
         defaultUserValues(user);
+
+        OFSErrors errors = new OFSErrors();
+        userCreateValidator.validate(user, errors);
+
         userRepository.addUser(user);
         return ResponseEntity.created(id).build();
     }
@@ -48,7 +57,7 @@ public class UserController {
 
 
     private void defaultUserValues(User user) {
-        user.setId(UUID.randomUUID());
+        user.setId(UUID.fromString(user.getIdFromHref()));
         user.setActiveFlag(true);
     }
 }

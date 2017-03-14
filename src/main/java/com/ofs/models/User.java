@@ -1,6 +1,8 @@
 package com.ofs.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ofs.server.model.BaseOFSEntity;
+import com.ofs.utils.StringUtils;
 import lombok.Data;
 
 import java.net.URI;
@@ -35,4 +37,9 @@ public class User extends BaseOFSEntity {
     private String token;
     private ZonedDateTime tokenExpDate;
     private boolean activeFlag;
+
+    @JsonIgnore
+    public String getIdFromHref() {
+        return StringUtils.getIdFromURI(getHref());
+    }
 }
