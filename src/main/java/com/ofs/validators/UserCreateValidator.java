@@ -23,10 +23,10 @@ public class UserCreateValidator implements Validator<User> {
     }
 
     @Override
-    public void validate(User user, OFSErrors errors) {
-        VALIDATIONS.forEach(validation ->
-            validation.validate(user, errors)
-        );
+    public void validate(User user, OFSErrors errors) throws Exception {
+        for (UserCreateValidation validation : VALIDATIONS) {
+            validation.validate(user, errors);
+        }
 
         if(!errors.isEmpty()) {
             throw new BadRequestException(errors);

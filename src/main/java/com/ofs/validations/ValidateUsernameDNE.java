@@ -15,8 +15,8 @@ public class ValidateUsernameDNE implements UserCreateValidation{
     UserRepository userRepository;
 
     @Override
-    public void validate(User user, OFSErrors errors) {
-        Optional optionalUser = userRepository.getUserByUserName(user.getEmailAddress());
+    public void validate(User user, OFSErrors errors) throws Exception {
+        Optional optionalUser = userRepository.getUserByUserName(user.getUserName());
 
         if(optionalUser.isPresent()) {
             errors.rejectValue("user.username.exists", "user.username", "Invalid username. Username already exists.");

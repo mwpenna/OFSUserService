@@ -16,7 +16,7 @@ public class ValidateCompany implements UserCreateValidation {
     CompanyRepository companyRepository;
 
     @Override
-    public void validate(User user, OFSErrors errors) {
+    public void validate(User user, OFSErrors errors) throws Exception {
         Optional<Company> optionalcompany = companyRepository.getCompanyById(user.getCompany().getIdFromHref());
 
         if(!optionalcompany.isPresent()) {

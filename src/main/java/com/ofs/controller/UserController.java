@@ -32,7 +32,7 @@ public class UserController {
 
     @ValidationSchema(value = "/user-create.json")
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity create(@OFSServerId URI id, OFSServerForm<User> form) throws IOException{
+    public ResponseEntity create(@OFSServerId URI id, OFSServerForm<User> form) throws IOException, Exception{
         User user = form.create(id);
         defaultUserValues(user);
 

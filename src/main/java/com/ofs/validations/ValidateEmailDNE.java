@@ -15,7 +15,7 @@ public class ValidateEmailDNE implements UserCreateValidation {
     UserRepository userRepository;
 
     @Override
-    public void validate(User user, OFSErrors errors) {
+    public void validate(User user, OFSErrors errors) throws Exception {
         Optional optionalUser = userRepository.getUserByEmailAddress(user.getEmailAddress());
 
         if(optionalUser.isPresent()) {
