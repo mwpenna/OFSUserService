@@ -30,7 +30,7 @@ public class UserRepository extends BaseCouchbaseRepository<User> {
         try {
             ParameterizedN1qlQuery query = ParameterizedN1qlQuery.parameterized(
                 generateGetByUserNameQuery(), generateGetByUserNameParameters(username));
-            return Optional.of(queryByParameters(query, User.class));
+            return queryForObjectByParameters(query, User.class);
         }
         catch (NoSuchElementException e) {
             log.info("No results returned for getUserByUserName");
@@ -42,7 +42,7 @@ public class UserRepository extends BaseCouchbaseRepository<User> {
         try {
             ParameterizedN1qlQuery query = ParameterizedN1qlQuery.parameterized(
                     generateGetByEmailAddressQuery(), generateGetByEmailAddressParameters(emailAddress));
-            return Optional.of(queryByParameters(query, User.class));
+            return queryForObjectByParameters(query, User.class);
         }
         catch (NoSuchElementException e) {
             log.info("No results returned for getUserByEmailAddress",e);

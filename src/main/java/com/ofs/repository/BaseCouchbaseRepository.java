@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
+import java.util.Optional;
 
 import static java.lang.String.format;
 
@@ -21,7 +22,7 @@ public abstract class BaseCouchbaseRepository<T> {
 
     ObjectMapper objectMapper = new ObjectMapper();
 
-    public T queryByParameters( ParameterizedN1qlQuery query, Class<T> clazz) throws Exception {
+    public Optional<T> queryForObjectByParameters(ParameterizedN1qlQuery query, Class<T> clazz) throws Exception {
         T entity;
 
         N1qlQueryResult queryResult = couchbaseFactory.getUserBucket().query(query);
@@ -33,8 +34,8 @@ public abstract class BaseCouchbaseRepository<T> {
         }
 
         try {
-            if(resultMap.isEmpty()) {
-                return null;
+            if(resultMap == null || resultMap.isEmpty()) {
+                return Optional.empty();
             }
 
             Constructor<T> constructor = clazz.getConstructor(Map.class);
@@ -47,6 +48,6 @@ public abstract class BaseCouchbaseRepository<T> {
             throw new RuntimeException(format("Failed to create entity %s", clazz.getTypeName()), e);
         }
 
-        return entity;
+        return Optional.of(entity);
     }
 }
