@@ -8,6 +8,7 @@ import com.ofs.server.form.OFSServerForm;
 import com.ofs.server.form.ValidationSchema;
 import com.ofs.server.model.OFSErrors;
 import com.ofs.validators.UserCreateValidator;
+import org.jasypt.util.password.StrongPasswordEncryptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -35,6 +36,7 @@ public class UserController {
     public ResponseEntity create(@OFSServerId URI id, OFSServerForm<User> form) throws IOException, Exception{
         User user = form.create(id);
         defaultUserValues(user);
+        encryptPassword(user);
 
         OFSErrors errors = new OFSErrors();
         userCreateValidator.validate(user, errors);
@@ -55,6 +57,11 @@ public class UserController {
     @GetMapping(value = "/authenticate")
     public ResponseEntity authenticateUser() { return ResponseEntity.noContent().build();}
 
+    private void encryptPassword(User user) {
+        StrongPasswordEncryptor strongPasswordEncryptor = new StrongPasswordEncryptor();
+        String encryptedPassword = strongPasswordEncryptor.encryptPassword(user.getPassword());
+        user.setPassword(encryptedPassword);
+    }
 
     private void defaultUserValues(User user) {
         user.setId(UUID.fromString(user.getIdFromHref()));

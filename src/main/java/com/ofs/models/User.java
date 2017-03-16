@@ -3,6 +3,7 @@ package com.ofs.models;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ofs.server.model.BaseOFSEntity;
 import com.ofs.utils.StringUtils;
+
 import lombok.Data;
 
 import java.net.URI;
@@ -29,6 +30,16 @@ public class User extends BaseOFSEntity {
 
     public  User(Map map) {
         this.setId(UUID.fromString((String)map.get("id")));
+        this.setFirstName((String) map.get("firstName"));
+        this.setLastName((String) map.get("lastName"));
+        this.setRole(Role.valueOf((String) map.get("role")));
+        this.setCompany(Company.getCompany((Map) map.get("company")));
+        this.setUserName((String) map.get("userName"));
+        this.setPassword((String) map.get("password"));
+        this.setEmailAddress((String) map.get("emailAddress"));
+        this.setToken((String) map.get("token"));
+        this.setTokenExpDate((ZonedDateTime) map.get("tokenExpDate"));
+        this.setActiveFlag((Boolean) map.get("activeFlag"));
     }
 
     private UUID id;
@@ -53,6 +64,16 @@ public class User extends BaseOFSEntity {
         User user = new User();
 
         user.setId(UUID.fromString((String)userMap.get("id")));
+        user.setFirstName((String) userMap.get("firstName"));
+        user.setLastName((String) userMap.get("lastName"));
+        user.setRole(Role.valueOf((String) userMap.get("role")));
+//        this.setCompany();
+        user.setUserName((String) userMap.get("userName"));
+        user.setPassword((String) userMap.get("password"));
+        user.setEmailAddress((String) userMap.get("emailAddress"));
+        user.setToken((String) userMap.get("token"));
+        user.setTokenExpDate((ZonedDateTime) userMap.get("tokenExpDate"));
+        user.setActiveFlag((Boolean) userMap.get("activeFlag"));
 
         return user;
     }

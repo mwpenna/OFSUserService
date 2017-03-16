@@ -1,12 +1,11 @@
 package com.ofs.repository;
 
-import com.couchbase.client.deps.com.fasterxml.jackson.databind.ObjectMapper;
 import com.couchbase.client.java.query.N1qlQueryResult;
 import com.couchbase.client.java.query.N1qlQueryRow;
 import com.couchbase.client.java.query.ParameterizedN1qlQuery;
-import com.ofs.models.User;
-import com.ofs.server.model.BaseOFSEntity;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -20,7 +19,9 @@ public abstract class BaseCouchbaseRepository<T> {
     @Autowired
     CouchbaseFactory couchbaseFactory;
 
-    ObjectMapper objectMapper = new ObjectMapper();
+    @Autowired
+    @Qualifier("ofsObjectMapper")
+    protected com.fasterxml.jackson.databind.ObjectMapper ofsObjectMapper;
 
     public Optional<T> queryForObjectByParameters(ParameterizedN1qlQuery query, Class<T> clazz) throws Exception {
         T entity;

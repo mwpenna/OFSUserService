@@ -16,8 +16,8 @@ import java.util.Optional;
 @Slf4j
 public class UserRepository extends BaseCouchbaseRepository<User> {
 
-    public void addUser(User user) throws JsonProcessingException {
-        JsonObject jsonObject = JsonObject.fromJson(objectMapper.writeValueAsString(user));
+    public void addUser(User user) throws JsonProcessingException, com.fasterxml.jackson.core.JsonProcessingException {
+        JsonObject jsonObject = JsonObject.fromJson(ofsObjectMapper.writeValueAsString(user));
         JsonDocument jsonDocument = JsonDocument.create(user.getId().toString(), jsonObject);
         couchbaseFactory.getUserBucket().insert(jsonDocument);
     }

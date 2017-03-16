@@ -39,9 +39,11 @@ public class Company extends BaseOFSEntity{
     public static Company getCompany(Map companyMap) {
         Company company = new Company();
 
-        company.setId(UUID.fromString((String)companyMap.get("id")));
-        company.setName((String)companyMap.get("name"));
         company.setHref(URI.create((String)companyMap.get("href")));
+        company.setName((String)companyMap.get("name"));
+
+        String id = (String)companyMap.get("id");
+        company.setId(id != null ? UUID.fromString(id) : UUID.fromString(StringUtils.getIdFromURI(company.getHref())));
 
         return company;
     }
