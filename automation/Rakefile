@@ -1,0 +1,9 @@
+require 'cucumber/rake/task'
+require 'envme'
+require 'pry'
+require_relative 'features/support/lib/helpers'
+
+Cucumber::Rake::Task.new(:test, 'Check feature files for syntax errors') do |task|
+  task.cucumber_opts = %w{ features --format pretty --format rerun --out rerun.txt || cucumber @rerun.txt}
+end
+

@@ -26,10 +26,10 @@ import java.util.UUID;
 public class UserController {
 
     @Autowired
-    UserRepository userRepository;
+    private UserRepository userRepository;
 
     @Autowired
-    UserCreateValidator userCreateValidator;
+    private UserCreateValidator userCreateValidator;
 
     @ValidationSchema(value = "/user-create.json")
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
