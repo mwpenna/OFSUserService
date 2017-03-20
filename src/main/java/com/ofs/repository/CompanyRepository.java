@@ -26,7 +26,7 @@ public class CompanyRepository extends BaseCouchbaseRepository<Company> {
 
         try {
             ParameterizedN1qlQuery query = ParameterizedN1qlQuery.parameterized(generateGetByIdQuery(), generateGetByIdParameters(id));
-            return queryForObjectByParameters(query, Company.class);
+            return queryForObjectByParameters(query, couchbaseFactory.getCompanyBucket(), Company.class);
 
         }
         catch (NoSuchElementException e) {

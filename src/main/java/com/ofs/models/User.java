@@ -32,8 +32,10 @@ public class User extends BaseOFSEntity {
         this.setId(UUID.fromString((String)map.get("id")));
         this.setFirstName((String) map.get("firstName"));
         this.setLastName((String) map.get("lastName"));
-        this.setRole(Role.valueOf((String) map.get("role")));
-        this.setCompany(Company.getCompany((Map) map.get("company")));
+        String role = (String) map.get("role");
+        this.setRole(role != null ? Role.valueOf((String) map.get("role")) : null);
+        Map companyMap = (Map) map.get("company");
+        this.setCompany( companyMap != null ? Company.getCompany(companyMap) : null);
         this.setUserName((String) map.get("userName"));
         this.setPassword((String) map.get("password"));
         this.setEmailAddress((String) map.get("emailAddress"));
@@ -59,22 +61,22 @@ public class User extends BaseOFSEntity {
         return StringUtils.getIdFromURI(getHref());
     }
 
-    @JsonIgnore
-    public static User getUser(Map userMap) {
-        User user = new User();
-
-        user.setId(UUID.fromString((String)userMap.get("id")));
-        user.setFirstName((String) userMap.get("firstName"));
-        user.setLastName((String) userMap.get("lastName"));
-        user.setRole(Role.valueOf((String) userMap.get("role")));
+//    @JsonIgnore
+//    public static User getUser(Map userMap) {
+//        User user = new User();
+//
+//        user.setId(UUID.fromString((String)userMap.get("id")));
+//        user.setFirstName((String) userMap.get("firstName"));
+//        user.setLastName((String) userMap.get("lastName"));
+//        user.setRole(Role.valueOf((String) userMap.get("role")));
 //        this.setCompany();
-        user.setUserName((String) userMap.get("userName"));
-        user.setPassword((String) userMap.get("password"));
-        user.setEmailAddress((String) userMap.get("emailAddress"));
-        user.setToken((String) userMap.get("token"));
-        user.setTokenExpDate((ZonedDateTime) userMap.get("tokenExpDate"));
-        user.setActiveFlag((Boolean) userMap.get("activeFlag"));
-
-        return user;
-    }
+//        user.setUserName((String) userMap.get("userName"));
+//        user.setPassword((String) userMap.get("password"));
+//        user.setEmailAddress((String) userMap.get("emailAddress"));
+//        user.setToken((String) userMap.get("token"));
+//        user.setTokenExpDate((ZonedDateTime) userMap.get("tokenExpDate"));
+//        user.setActiveFlag((Boolean) userMap.get("activeFlag"));
+//
+//        return user;
+//    }
 }

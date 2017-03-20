@@ -6,6 +6,7 @@ import com.couchbase.client.java.document.json.JsonObject;
 import com.couchbase.client.java.query.ParameterizedN1qlQuery;
 import com.ofs.models.User;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.util.NoSuchElementException;
@@ -15,6 +16,9 @@ import java.util.Optional;
 @Repository
 @Slf4j
 public class UserRepository extends BaseCouchbaseRepository<User> {
+
+    @Autowired
+    CouchbaseFactory couchbaseFactory;
 
     public void addUser(User user) throws JsonProcessingException, com.fasterxml.jackson.core.JsonProcessingException {
         JsonObject jsonObject = JsonObject.fromJson(ofsObjectMapper.writeValueAsString(user));
@@ -27,10 +31,14 @@ public class UserRepository extends BaseCouchbaseRepository<User> {
     }
 
     public Optional<User> getUserByUserName(String username) throws Exception{
+        if(username == null) {
+            return Optional.empty();
+        }
+
         try {
             ParameterizedN1qlQuery query = ParameterizedN1qlQuery.parameterized(
                 generateGetByUserNameQuery(), generateGetByUserNameParameters(username));
-            return queryForObjectByParameters(query, User.class);
+            return queryForObjectByParameters(query, couchbaseFactory.getUserBucket(), User.class);
         }
         catch (NoSuchElementException e) {
             log.info("No results returned for getUserByUserName");
@@ -39,10 +47,14 @@ public class UserRepository extends BaseCouchbaseRepository<User> {
     }
 
     public Optional<User> getUserByEmailAddress(String emailAddress) throws Exception {
+        if(emailAddress == null) {
+            return Optional.empty();
+        }
+
         try {
             ParameterizedN1qlQuery query = ParameterizedN1qlQuery.parameterized(
                     generateGetByEmailAddressQuery(), generateGetByEmailAddressParameters(emailAddress));
-            return queryForObjectByParameters(query, User.class);
+            return queryForObjectByParameters(query, couchbaseFactory.getUserBucket(), User.class);
         }
         catch (NoSuchElementException e) {
             log.info("No results returned for getUserByEmailAddress",e);

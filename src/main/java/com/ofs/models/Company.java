@@ -25,9 +25,13 @@ public class Company extends BaseOFSEntity{
     }
 
     public Company(Map map) {
-        this.setId(UUID.fromString((String)map.get("id")));
+        String id = (String)map.get("id");
+        this.setId(id != null ? UUID.fromString(id) : null);
+
         this.setName((String)map.get("name"));
-        this.setHref(URI.create((String)map.get("href")));
+
+        String href = (String)map.get("href");
+        this.setHref(href != null ? URI.create(href) : null);
     }
 
     @JsonIgnore
