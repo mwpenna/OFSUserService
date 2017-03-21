@@ -1,5 +1,3 @@
-require 'pry'
-
 When(/^test$/) do
   x = 123
   binding.pry

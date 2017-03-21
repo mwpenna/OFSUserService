@@ -1,0 +1,13 @@
+local:
+  :users_db:
+    :adapter: mysql2
+    :host: localhost
+    :username:
+    :password:
+    :bucket: users
+  :company_db:
+    :adapter: mysql2
+    :host: localhost
+    :username:
+    :password:
+    :bucket: company
