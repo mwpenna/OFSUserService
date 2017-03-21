@@ -17,13 +17,13 @@ Feature: User is created when user endpoint is called
     Given A users company all ready exists
     When A request to create a user is received with missing role
     Then the response should have a status of 400
-    And I should see an error message with company rolmissinge
+    And I should see an error message with role missing
 
   Scenario: Try to create a user without username
     Given A users company all ready exists
-    When A request to create a user is received with missing username
+    When A request to create a user is received with missing userName
     Then the response should have a status of 400
-    And I should see an error message with username missing
+    And I should see an error message with userName missing
 
   Scenario: Try to create a user without emailAddress
     Given A users company all ready exists
