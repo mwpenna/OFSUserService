@@ -1,5 +1,14 @@
+require 'faker'
+
 Given(/^A users company all ready exists$/) do
 
+end
+
+Given(/^A company and user exists$/) do
+  name = Faker::Pokemon.name + (SecureRandom.random_number(999) + 1000).to_s
+  email = name + "@pokemon.com"
+  @user = FactoryGirl.build(:user, userName: name, emailAddress: email)
+  @result = @service_client.post_to_url("/users", @user.create_to_json)
 end
 
 When(/^A request to create a user is received with missing (.*?)$/) do |field|
@@ -15,4 +24,55 @@ end
 
 And(/^I should see an error message with (.*?) missing$/) do |property|
   expect(@result["errors"][0]).to eql Errors.required_field_missing(property)
+end
+
+When(/^A create user request is received with (.*?)$/) do |field|
+  @user = FactoryGirl.build(:user)
+  body = @user.create_to_hash
+  body[field]="test"
+  @result = @service_client.post_to_url("/users", body.to_json)
+end
+
+And(/^I should see an error message with (.*?) not allowed/) do |property|
+  expect(@result["errors"][0]).to eql Errors.field_not_acceptable(property)
+end
+
+When(/^A request to create a user is received with an invalid company$/) do
+  @user = FactoryGirl.build(:user, company_href: @service_client.get_base_uri + "/company/id/123")
+  @result = @service_client.post_to_url("/users", @user.create_to_json)
+end
+
+And(/^I should see an error message with company does not exists$/) do
+  expect(@result["errors"][0]).to eql Errors.company_id_invalid
+end
+
+When(/^A request to create a user is received$/) do
+  name = Faker::Pokemon.name + (SecureRandom.random_number(999) + 1000).to_s
+  email = name + "@pokemon.com"
+  @user = FactoryGirl.build(:user, userName: name, emailAddress: email)
+  @result = @service_client.post_to_url("/users", @user.create_to_json)
+end
+
+And(/^I should see the location header populated$/) do
+  expect(@result.headers['location']).to_not be_nil
+end
+
+When(/^A request to create a user is received with a duplicate username$/) do
+  email = @user.to_hash[:userName] + (SecureRandom.random_number(999) + 1000).to_s + "@pokemon.com"
+  duplicateUserName = FactoryGirl.build(:user, userName: @user.to_hash[:userName], emailAddress: email)
+  @result = @service_client.post_to_url("/users", duplicateUserName.create_to_json)
+end
+
+And(/^I should see an error message with duplicate username$/) do
+  expect(@result["errors"][0]).to eql Errors.username_exists
+end
+
+When(/^A request to create a user is received with a duplicate emailAddress$/) do
+  userName = @user.to_hash[:userName] + (SecureRandom.random_number(999) + 1000).to_s
+  duplicateEmailAddress = FactoryGirl.build(:user, userName: userName, emailAddress: @user.to_hash[:emailAddress])
+  @result = @service_client.post_to_url("/users", duplicateEmailAddress.create_to_json)
+end
+
+And(/^I should see an error message with duplicate emailAddress$/) do
+  expect(@result["errors"][0]).to eql Errors.emailaddress_exists
 end

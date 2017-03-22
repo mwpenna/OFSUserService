@@ -33,31 +33,31 @@ Feature: User is created when user endpoint is called
 
   Scenario: Try to create a user with id
     Given A users company all ready exists
-    When A request to create a user is received with id
+    When A create user request is received with id
     Then the response should have a status of 400
     And I should see an error message with id not allowed
 
   Scenario: Try to create a user with href
     Given A users company all ready exists
-    When A request to create a user is received with href
+    When A create user request is received with href
     Then the response should have a status of 400
     And I should see an error message with href not allowed
 
   Scenario: Try to create a user with token
     Given A users company all ready exists
-    When A request to create a user is received with token
+    When A create user request is received with token
     Then the response should have a status of 400
     And I should see an error message with token not allowed
 
   Scenario: Try to create a user with tokenExpDate
     Given A users company all ready exists
-    When A request to create a user is received with tokenExpDate
+    When A create user request is received with tokenExpDate
     Then the response should have a status of 400
     And I should see an error message with tokenExpDate not allowed
 
   Scenario: Try to create a user with activeFlag
     Given A users company all ready exists
-    When A request to create a user is received with activeFlag
+    When A create user request is received with activeFlag
     Then the response should have a status of 400
     And I should see an error message with activeFlag not allowed
 
@@ -67,13 +67,13 @@ Feature: User is created when user endpoint is called
     And I should see an error message with company does not exists
 
   Scenario: Validate user username does not exists
-    Given A users company and username all ready exists
+    Given A company and user exists
     When A request to create a user is received with a duplicate username
     Then the response should have a status of 400
     And I should see an error message with duplicate username
 
   Scenario: Validate user emailAddress does not exists
-    Given A users company, username, emailAddress all ready exists
+    Given A company and user exists
     When A request to create a user is received with a duplicate emailAddress
     Then the response should have a status of 400
     And I should see an error message with duplicate emailAddress

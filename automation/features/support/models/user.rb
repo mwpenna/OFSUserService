@@ -25,7 +25,7 @@ class User
           name: self.company_name
       },
       role: self.role,
-      username: self.userName,
+      userName: self.userName,
       password: self.password,
       emailAddress: self.emailAddress,
       token: self.token,
@@ -44,7 +44,7 @@ class User
             name: self.company_name
         },
         role: self.role,
-        username: self.userName,
+        userName: self.userName,
         password: self.password,
         emailAddress: self.emailAddress,
         token: self.token,
@@ -62,7 +62,7 @@ class User
             name: self.company_name
         },
         role: self.role,
-        username: self.userName,
+        userName: self.userName,
         password: self.password,
         emailAddress: self.emailAddress
     }
@@ -77,7 +77,7 @@ class User
             name: self.company_name
         },
         role: self.role,
-        username: self.userName,
+        userName: self.userName,
         password: self.password,
         emailAddress: self.emailAddress
     }.to_json
