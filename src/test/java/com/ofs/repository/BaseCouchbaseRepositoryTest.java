@@ -113,6 +113,16 @@ public class BaseCouchbaseRepositoryTest {
         objectUnderTest.queryForObjectByParameters(query, bucket, User.class);
     }
 
+    @Test(expected = NullPointerException.class)
+    public void queryForObjectByIdWithNullId_shouldThrowNullPointerException() {
+
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void queryForObjectByIdWithNullClass_shouldThrowNullPointerException() {
+
+    }
+
     private DefaultN1qlQueryResult generateSuccessResult() {
         DefaultN1qlQueryResult defaultN1qlQueryResult = new DefaultN1qlQueryResult(rows, null, null,
                 null, null, null, true, null, null);

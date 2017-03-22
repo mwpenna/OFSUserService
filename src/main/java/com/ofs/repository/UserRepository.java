@@ -35,7 +35,7 @@ public class UserRepository extends BaseCouchbaseRepository<User> {
             return Optional.empty();
         }
 
-        return queryForObjectById(id, User.class);
+        return queryForObjectById(id, couchbaseFactory.getUserBucket(), User.class);
     }
 
     public Optional<User> getUserByUserName(String username) throws Exception{

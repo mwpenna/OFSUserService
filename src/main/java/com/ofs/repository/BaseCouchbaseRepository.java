@@ -50,10 +50,11 @@ public abstract class BaseCouchbaseRepository<T> {
         return mapResultsToObject(resultMap, clazz);
     }
 
-    public Optional<T> queryForObjectById(String id, Class clazz) {
+    public Optional<T> queryForObjectById(String id, Bucket bucket, Class clazz) {
         Objects.requireNonNull(id);
+        Objects.requireNonNull(clazz);
 
-        JsonDocument jsonDocument = queryForObject(id);
+        JsonDocument jsonDocument = queryForObject(id, bucket);
 
         if(jsonDocument == null || jsonDocument.content() == null) {
             return Optional.empty();
@@ -63,11 +64,11 @@ public abstract class BaseCouchbaseRepository<T> {
         }
     }
 
-    private JsonDocument queryForObject(String id) {
+    private JsonDocument queryForObject(String id, Bucket bucket) {
         JsonDocument jsonDocument;
 
         try{
-            jsonDocument = couchbaseFactory.getUserBucket().get(id);
+            jsonDocument = bucket.get(id);
         }
         catch (BackpressureException | RequestCancelledException |TemporaryFailureException ex) {
             log.error("Exception occured with connection to couchbase : {}", ex);
