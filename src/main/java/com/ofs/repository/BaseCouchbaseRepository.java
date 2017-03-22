@@ -3,10 +3,13 @@ package com.ofs.repository;
 import com.couchbase.client.core.BackpressureException;
 import com.couchbase.client.core.RequestCancelledException;
 import com.couchbase.client.java.Bucket;
+import com.couchbase.client.java.document.JsonDocument;
+import com.couchbase.client.java.error.TemporaryFailureException;
 import com.couchbase.client.java.query.N1qlQueryResult;
 import com.couchbase.client.java.query.N1qlQueryRow;
 import com.couchbase.client.java.query.ParameterizedN1qlQuery;
 
+import com.ofs.models.User;
 import com.ofs.server.errors.ServiceUnavailableException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +48,37 @@ public abstract class BaseCouchbaseRepository<T> {
         }
 
         return mapResultsToObject(resultMap, clazz);
+    }
+
+    public Optional<T> queryForObjectById(String id, Class clazz) {
+        Objects.requireNonNull(id);
+
+        JsonDocument jsonDocument = queryForObject(id);
+
+        if(jsonDocument == null || jsonDocument.content() == null) {
+            return Optional.empty();
+        }
+        else {
+            return mapResultsToObject(jsonDocument.content().toMap(), clazz);
+        }
+    }
+
+    private JsonDocument queryForObject(String id) {
+        JsonDocument jsonDocument;
+
+        try{
+            jsonDocument = couchbaseFactory.getUserBucket().get(id);
+        }
+        catch (BackpressureException | RequestCancelledException |TemporaryFailureException ex) {
+            log.error("Exception occured with connection to couchbase : {}", ex);
+            throw new ServiceUnavailableException();
+        }
+        catch (RuntimeException ex) {
+            log.error("Exception occured with connection to couchbase : {}", ex);
+            throw new ServiceUnavailableException();
+        }
+
+        return jsonDocument;
     }
 
     private N1qlQueryResult queryForObject(ParameterizedN1qlQuery query, Bucket bucket) {

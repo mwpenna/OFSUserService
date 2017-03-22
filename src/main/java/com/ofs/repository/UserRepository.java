@@ -1,10 +1,14 @@
 package com.ofs.repository;
 
+import com.couchbase.client.core.BackpressureException;
+import com.couchbase.client.core.RequestCancelledException;
 import com.couchbase.client.deps.com.fasterxml.jackson.core.JsonProcessingException;
 import com.couchbase.client.java.document.JsonDocument;
 import com.couchbase.client.java.document.json.JsonObject;
+import com.couchbase.client.java.error.TemporaryFailureException;
 import com.couchbase.client.java.query.ParameterizedN1qlQuery;
 import com.ofs.models.User;
+import com.ofs.server.errors.ServiceUnavailableException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -27,15 +31,11 @@ public class UserRepository extends BaseCouchbaseRepository<User> {
     }
 
     public Optional<User> getUserById(String id) {
-        JsonDocument jsonDocument = couchbaseFactory.getUserBucket().get(id);
-
-        if(jsonDocument == null || jsonDocument.content() == null) {
+        if(id == null) {
             return Optional.empty();
         }
-        else {
-            User user = User.getUser(jsonDocument.content().toMap());
-            return Optional.of(user);
-        }
+
+        return queryForObjectById(id, User.class);
     }
 
     public Optional<User> getUserByUserName(String username) throws Exception{
