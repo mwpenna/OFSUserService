@@ -53,6 +53,23 @@ When(/^A request to create a user is received$/) do
   @result = @service_client.post_to_url("/users", @user.create_to_json)
 end
 
+And(/^I should see the user was created$/) do
+  location = @result.headers['location']
+  expect(location).to_not be_nil
+  response = @service_client.get_by_url(location);
+
+  expect(response["id"]).to eql location.split("/id/").last
+  expect(response["firstName"]).to eql @user.to_hash[:firstName]
+  expect(response["lastName"]).to eql @user.to_hash[:lastName]
+  expect(response["role"]).to eql @user.to_hash[:role]
+  expect(response["userName"]).to eql @user.to_hash[:userName]
+  expect(response["password"]).to_not eql @user.to_hash[:password]
+  expect(response["emailAddress"]).to eql @user.to_hash[:emailAddress]
+  expect(response["activeFlag"]).to eql true
+  expect(response["company"]["href"]).to eql @user.to_hash[:company][:href]
+  expect(response["company"]["name"]).to eql @user.to_hash[:company][:name]
+end
+
 And(/^I should see the location header populated$/) do
   expect(@result.headers['location']).to_not be_nil
 end
