@@ -15,9 +15,12 @@ import org.springframework.http.ResponseEntity;
 
 import java.net.URI;
 import java.time.ZonedDateTime;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.Assert.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.when;
 
 public class UserControllerTest extends WebIntegrationTestbootstrap {
 
@@ -41,6 +44,29 @@ public class UserControllerTest extends WebIntegrationTestbootstrap {
         ResponseEntity<String> response = restTemplate.postForEntity(apiUrl("users"), entity, String.class);
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
     }
+
+    @Test
+    public void getUser_happyPathSuccceeds() throws JsonProcessingException {
+        when(userRepository.getUserById(any())).thenReturn(Optional.of(generateResponseUser()));
+        ResponseEntity<String> response = restTemplate.getForEntity(apiUrl("users/id/"+id), String.class);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+    }
+
+    private User generateResponseUser() {
+        User user = new User();
+
+        user.setHref(URI.create(apiUrl("/users/id/"+id)));
+        user.setFirstName("name");
+        user.setLastName("lName");
+        user.setRole(User.Role.ACCOUNT_MANAGER);
+        user.setUserName("name.lName");
+        user.setPassword("password");
+        user.setEmailAddress("name.lName@place.com");
+        user.setCompany(generateDefaultCompany());
+
+        return user;
+    }
+
 
     private UserRequest generateDefaultUser() {
         UserRequest user = new UserRequest();
