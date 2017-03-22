@@ -27,7 +27,15 @@ public class UserRepository extends BaseCouchbaseRepository<User> {
     }
 
     public Optional<User> getUserById(String id) {
-        return Optional.empty();
+        JsonDocument jsonDocument = couchbaseFactory.getUserBucket().get(id);
+
+        if(jsonDocument == null || jsonDocument.content() == null) {
+            return Optional.empty();
+        }
+        else {
+            User user = User.getUser(jsonDocument.content().toMap());
+            return Optional.of(user);
+        }
     }
 
     public Optional<User> getUserByUserName(String username) throws Exception{

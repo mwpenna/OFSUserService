@@ -61,22 +61,24 @@ public class User extends BaseOFSEntity {
         return StringUtils.getIdFromURI(getHref());
     }
 
-//    @JsonIgnore
-//    public static User getUser(Map userMap) {
-//        User user = new User();
-//
-//        user.setId(UUID.fromString((String)userMap.get("id")));
-//        user.setFirstName((String) userMap.get("firstName"));
-//        user.setLastName((String) userMap.get("lastName"));
-//        user.setRole(Role.valueOf((String) userMap.get("role")));
-//        this.setCompany();
-//        user.setUserName((String) userMap.get("userName"));
-//        user.setPassword((String) userMap.get("password"));
-//        user.setEmailAddress((String) userMap.get("emailAddress"));
-//        user.setToken((String) userMap.get("token"));
-//        user.setTokenExpDate((ZonedDateTime) userMap.get("tokenExpDate"));
-//        user.setActiveFlag((Boolean) userMap.get("activeFlag"));
-//
-//        return user;
-//    }
+    @JsonIgnore
+    public static User getUser(Map userMap) {
+        User user = new User();
+
+        user.setId(UUID.fromString((String)userMap.get("id")));
+        user.setFirstName((String) userMap.get("firstName"));
+        user.setLastName((String) userMap.get("lastName"));
+        String role = (String) userMap.get("role");
+        user.setRole(role != null ? Role.valueOf((String) userMap.get("role")) : null);
+        Map companyMap = (Map) userMap.get("company");
+        user.setCompany( companyMap != null ? Company.getCompany(companyMap) : null);
+        user.setUserName((String) userMap.get("userName"));
+        user.setPassword((String) userMap.get("password"));
+        user.setEmailAddress((String) userMap.get("emailAddress"));
+        user.setToken((String) userMap.get("token"));
+        user.setTokenExpDate((ZonedDateTime) userMap.get("tokenExpDate"));
+        user.setActiveFlag((Boolean) userMap.get("activeFlag"));
+
+        return user;
+    }
 }
