@@ -12,7 +12,6 @@ import java.util.UUID;
 @Data
 public class Company extends BaseOFSEntity{
 
-    private URI href;
     private String name;
     private UUID id;
 

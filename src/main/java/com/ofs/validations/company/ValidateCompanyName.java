@@ -20,7 +20,7 @@ public class ValidateCompanyName implements CompanyCreateValidation {
     public void validate(Company company, OFSErrors errors) throws Exception {
         Optional optionalCompany = companyRepository.getCompanyByName(company.getName());
 
-        if(!optionalCompany.isPresent()) {
+        if(optionalCompany.isPresent()) {
             errors.rejectValue("company.name.exists", "company.name", "Invalid company name. Company name already exists.");
         }
     }
