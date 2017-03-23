@@ -1,18 +1,25 @@
 require 'faker'
 
 Given(/^A users company all ready exists$/) do
-
+  company = FactoryGirl.build(:company, name: Faker::Company.name + (SecureRandom.random_number(999) + 1000).to_s)
+  result = @service_client.post_to_url("/company", company.create_to_json)
+  href = result.headers['location']
+  @company = FactoryGirl.build(:company, name: company.name, href: href, id: href.split("/id/").last)
 end
 
 Given(/^A company and user exists$/) do
+  company = FactoryGirl.build(:company, name: Faker::Company.name + (SecureRandom.random_number(999) + 1000).to_s)
+  result = @service_client.post_to_url("/company", company.create_to_json)
+  href = result.headers['location']
+  @company = FactoryGirl.build(:company, name: company.name, href: href, id: href.split("/id/").last)
   name = Faker::Pokemon.name + (SecureRandom.random_number(999) + 1000).to_s
   email = name + "@pokemon.com"
-  @user = FactoryGirl.build(:user, userName: name, emailAddress: email)
+  @user = FactoryGirl.build(:user, userName: name, emailAddress: email, company_href: @company.href, company_name: @company.name)
   @result = @service_client.post_to_url("/users", @user.create_to_json)
 end
 
 When(/^A request to create a user is received with missing (.*?)$/) do |field|
-  @user = FactoryGirl.build(:user)
+  @user = FactoryGirl.build(:user, company_href: @company.href, company_name: @company.name)
   body = @user.create_to_hash
   body.delete(field.to_sym)
   @result = @service_client.post_to_url("/users", body.to_json)
@@ -27,7 +34,7 @@ And(/^I should see an error message with (.*?) missing$/) do |property|
 end
 
 When(/^A create user request is received with (.*?)$/) do |field|
-  @user = FactoryGirl.build(:user)
+  @user = FactoryGirl.build(:user, company_href: @company.href, company_name: @company.name)
   body = @user.create_to_hash
   body[field]="test"
   @result = @service_client.post_to_url("/users", body.to_json)
@@ -49,7 +56,7 @@ end
 When(/^A request to create a user is received$/) do
   name = Faker::Pokemon.name + (SecureRandom.random_number(999) + 1000).to_s
   email = name + "@pokemon.com"
-  @user = FactoryGirl.build(:user, userName: name, emailAddress: email)
+  @user = FactoryGirl.build(:user, userName: name, emailAddress: email, company_href: @company.href, company_name: @company.name)
   @result = @service_client.post_to_url("/users", @user.create_to_json)
 end
 
@@ -76,7 +83,7 @@ end
 
 When(/^A request to create a user is received with a duplicate username$/) do
   email = @user.to_hash[:userName] + (SecureRandom.random_number(999) + 1000).to_s + "@pokemon.com"
-  duplicateUserName = FactoryGirl.build(:user, userName: @user.to_hash[:userName], emailAddress: email)
+  duplicateUserName = FactoryGirl.build(:user, userName: @user.to_hash[:userName], emailAddress: email, company_href: @company.href, company_name: @company.name)
   @result = @service_client.post_to_url("/users", duplicateUserName.create_to_json)
 end
 
@@ -86,7 +93,7 @@ end
 
 When(/^A request to create a user is received with a duplicate emailAddress$/) do
   userName = @user.to_hash[:userName] + (SecureRandom.random_number(999) + 1000).to_s
-  duplicateEmailAddress = FactoryGirl.build(:user, userName: userName, emailAddress: @user.to_hash[:emailAddress])
+  duplicateEmailAddress = FactoryGirl.build(:user, userName: userName, emailAddress: @user.to_hash[:emailAddress], company_href: @company.href, company_name: @company.name)
   @result = @service_client.post_to_url("/users", duplicateEmailAddress.create_to_json)
 end
 
