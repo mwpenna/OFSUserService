@@ -38,6 +38,8 @@ public abstract class BaseCouchbaseRepository<T> {
 
         Objects.requireNonNull(query);
         Objects.requireNonNull(clazz);
+        Objects.requireNonNull(bucket);
+
 
         N1qlQueryResult queryResult = queryForObject(query, bucket);
 
@@ -53,6 +55,7 @@ public abstract class BaseCouchbaseRepository<T> {
     public Optional<T> queryForObjectById(String id, Bucket bucket, Class clazz) {
         Objects.requireNonNull(id);
         Objects.requireNonNull(clazz);
+        Objects.requireNonNull(bucket);
 
         JsonDocument jsonDocument = queryForObject(id, bucket);
 

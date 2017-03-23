@@ -3,6 +3,7 @@ package com.ofs.repository;
 import com.couchbase.client.deps.com.fasterxml.jackson.core.JsonParseException;
 import com.couchbase.client.java.Bucket;
 import com.couchbase.client.java.Cluster;
+import com.couchbase.client.java.document.JsonDocument;
 import com.couchbase.client.java.document.json.JsonObject;
 import com.couchbase.client.java.query.AsyncN1qlQueryRow;
 import com.couchbase.client.java.query.DefaultAsyncN1qlQueryRow;
@@ -60,8 +61,10 @@ public class UserRepositoryTest {
     public void setup() throws JsonProcessingException {
         initMocks(this);
 
+        id = UUID.randomUUID();
+
         user = new User();
-        user.setId(UUID.randomUUID());
+        user.setId(id);
         user.setPassword("somePassword");
         user.setActiveFlag(true);
         user.setEmailAddress("emailAddress");
@@ -72,9 +75,6 @@ public class UserRepositoryTest {
         rows = new ArrayList<>();
         when(couchbaseFactory.getUserBucket()).thenReturn(bucket);
         when(ofsObjectMapper.writeValueAsString(anyString())).thenReturn(objectMapper.writeValueAsString(user));
-
-        id = UUID.randomUUID();
-
     }
 
     @Test
@@ -127,6 +127,33 @@ public class UserRepositoryTest {
         when(bucket.query(any(ParameterizedN1qlQuery.class))).thenReturn(generateSuccessResult());
         Optional<User> optional = objectUnderTest.getUserByEmailAddress(user.getEmailAddress());
         assertTrue(optional.isPresent());
+    }
+
+    @Test
+    public void getUserByIdNUllId_shouldReturnEmptyOptional() {
+        Optional<User> userOptional = objectUnderTest.getUserById(null);
+        assertFalse(userOptional.isPresent());
+    }
+
+    @Test
+    public void getUserById_happyPath() {
+        when(bucket.get(anyString())).thenReturn(JsonDocument.create(id.toString(), generateUserJsonObject()));
+        Optional<User> userOptional = objectUnderTest.getUserById(id.toString());
+        assertTrue(userOptional.isPresent());
+    }
+
+    private JsonObject generateUserJsonObject() {
+        JsonObject jsonObject = JsonObject.create();
+        jsonObject.put("id", id.toString());
+        jsonObject.put("firstName", "firstName");
+        jsonObject.put("lastName", "lastName");
+        jsonObject.put("role", "ADMIN");
+        jsonObject.put("userName", "someUserName");
+        jsonObject.put("password", "somePassword");
+        jsonObject.put("emailAddress", "emailAddress");
+        jsonObject.put("activeFlag", true);
+
+        return jsonObject;
     }
 
     private DefaultN1qlQueryResult generateSuccessResult() {
