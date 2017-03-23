@@ -49,7 +49,7 @@ public class UserRepository extends BaseCouchbaseRepository<User> {
             return queryForObjectByParameters(query, couchbaseFactory.getUserBucket(), User.class);
         }
         catch (NoSuchElementException e) {
-            log.info("No results returned for getUserByUserName");
+            log.info("No results returned for getUserByUserName with username: {}", username);
             return Optional.empty();
         }
     }
@@ -65,7 +65,7 @@ public class UserRepository extends BaseCouchbaseRepository<User> {
             return queryForObjectByParameters(query, couchbaseFactory.getUserBucket(), User.class);
         }
         catch (NoSuchElementException e) {
-            log.info("No results returned for getUserByEmailAddress",e);
+            log.info("No results returned for getUserByEmailAddress with emailaddress: {}", emailAddress);
             return Optional.empty();
         }
     }

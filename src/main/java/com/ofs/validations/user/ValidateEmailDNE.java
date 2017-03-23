@@ -21,7 +21,6 @@ public class ValidateEmailDNE implements UserCreateValidation {
 
         if(optionalUser.isPresent()) {
             errors.rejectValue("user.emailaddress.exists", "user.emailaddress", "Invalid email address. Email address already exists.");
-            return;
         }
 
     }

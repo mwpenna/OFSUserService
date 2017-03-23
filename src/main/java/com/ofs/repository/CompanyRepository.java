@@ -44,6 +44,22 @@ public class CompanyRepository extends BaseCouchbaseRepository<Company> {
         }
     }
 
+    public Optional<Company> getCompanyByName(String name) throws Exception {
+        if(name == null) {
+            return Optional.empty();
+        }
+
+        try{
+            ParameterizedN1qlQuery query = ParameterizedN1qlQuery.parameterized(
+                    generateGetByNameQuery(), generateGetByNameParameters(name));
+            return queryForObjectByParameters(query, couchbaseFactory.getCompanyBucket(), Company.class);
+        }
+        catch (NoSuchElementException e) {
+            log.info("No results returned for getCompanyByName with company name: {}", name);
+            return Optional.empty();
+        }
+    }
+
     private String generateGetByIdQuery() {
         return "SELECT `" + couchbaseFactory.getCompanyBucket().name() + "`.* FROM `" + couchbaseFactory.getCompanyBucket().name() + "` where id = $id";
     }
@@ -52,4 +68,11 @@ public class CompanyRepository extends BaseCouchbaseRepository<Company> {
         return JsonObject.create().put("$id", id);
     }
 
+    private String generateGetByNameQuery() {
+        return "SELECT `" + couchbaseFactory.getCompanyBucket().name() + "`.* FROM `" + couchbaseFactory.getCompanyBucket().name() + "` where name = $name";
+    }
+
+    private JsonObject generateGetByNameParameters(String name) {
+        return JsonObject.create().put("$name", name);
+    }
 }
