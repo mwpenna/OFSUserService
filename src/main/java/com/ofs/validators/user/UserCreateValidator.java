@@ -1,9 +1,10 @@
-package com.ofs.validators;
+package com.ofs.validators.user;
 
 import com.ofs.models.User;
 import com.ofs.server.errors.BadRequestException;
 import com.ofs.server.model.OFSErrors;
 import com.ofs.validations.UserCreateValidation;
+import com.ofs.validators.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

@@ -3,7 +3,7 @@ package com.ofs;
 import com.ofs.repository.CompanyRepository;
 import com.ofs.repository.CouchbaseFactory;
 import com.ofs.repository.UserRepository;
-import com.ofs.validators.UserCreateValidator;
+import com.ofs.validators.user.UserCreateValidator;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;

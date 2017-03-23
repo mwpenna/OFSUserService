@@ -4,6 +4,7 @@ import com.ofs.models.Company;
 import com.ofs.models.User;
 import com.ofs.repository.CompanyRepository;
 import com.ofs.server.model.OFSErrors;
+import com.ofs.validations.user.ValidateCompany;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;

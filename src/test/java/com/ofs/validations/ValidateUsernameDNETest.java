@@ -3,6 +3,7 @@ package com.ofs.validations;
 import com.ofs.models.User;
 import com.ofs.repository.UserRepository;
 import com.ofs.server.model.OFSErrors;
+import com.ofs.validations.user.ValidateUsernameDNE;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;

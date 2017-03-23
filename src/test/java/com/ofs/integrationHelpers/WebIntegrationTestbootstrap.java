@@ -3,7 +3,7 @@ package com.ofs.integrationHelpers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ofs.repository.CompanyRepository;
 import com.ofs.repository.UserRepository;
-import com.ofs.validators.UserCreateValidator;
+import com.ofs.validators.user.UserCreateValidator;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;

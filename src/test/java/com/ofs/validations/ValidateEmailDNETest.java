@@ -1,15 +1,14 @@
 package com.ofs.validations;
 
-import com.ofs.models.Company;
 import com.ofs.models.User;
 import com.ofs.repository.UserRepository;
 import com.ofs.server.model.OFSErrors;
+import com.ofs.validations.user.ValidateEmailDNE;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
-import java.net.URI;
 import java.util.Optional;
 import java.util.UUID;
 

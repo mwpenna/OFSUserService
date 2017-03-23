@@ -8,9 +8,12 @@ import com.ofs.server.errors.NotFoundException;
 import com.ofs.server.form.OFSServerForm;
 import com.ofs.server.form.ValidationSchema;
 import com.ofs.server.model.OFSErrors;
-import com.ofs.validators.UserCreateValidator;
+import com.ofs.validators.user.UserCreateValidator;
+
 import lombok.extern.slf4j.Slf4j;
+
 import org.jasypt.util.password.StrongPasswordEncryptor;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +23,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import java.io.IOException;
 import java.net.URI;
 import java.util.Optional;
 import java.util.UUID;
@@ -38,7 +40,7 @@ public class UserController {
 
     @ValidationSchema(value = "/user-create.json")
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity create(@OFSServerId URI id, OFSServerForm<User> form) throws IOException, Exception{
+    public ResponseEntity create(@OFSServerId URI id, OFSServerForm<User> form) throws Exception{
         User user = form.create(id);
         defaultUserValues(user);
         encryptPassword(user);

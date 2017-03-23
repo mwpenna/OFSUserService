@@ -1,10 +1,13 @@
 package com.ofs.repository;
 
+import com.couchbase.client.deps.com.fasterxml.jackson.core.JsonProcessingException;
+import com.couchbase.client.java.document.JsonDocument;
 import com.couchbase.client.java.document.json.JsonObject;
 import com.couchbase.client.java.query.ParameterizedN1qlQuery;
 
 import com.ofs.models.Company;
 
+import com.ofs.models.User;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -18,6 +21,12 @@ public class CompanyRepository extends BaseCouchbaseRepository<Company> {
 
     @Autowired
     CouchbaseFactory couchbaseFactory;
+
+    public void addCompany(Company company) throws JsonProcessingException, com.fasterxml.jackson.core.JsonProcessingException {
+        JsonObject jsonObject = JsonObject.fromJson(ofsObjectMapper.writeValueAsString(company));
+        JsonDocument jsonDocument = JsonDocument.create(company.getId().toString(), jsonObject);
+        couchbaseFactory.getCompanyBucket().insert(jsonDocument);
+    }
 
     public Optional<Company> getCompanyById(String id) throws Exception {
         if(id == null) {
