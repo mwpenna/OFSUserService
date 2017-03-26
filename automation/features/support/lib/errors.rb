@@ -38,4 +38,20 @@ class Errors
      "developerMessage"=>"Invalid email address. Email address already exists.",
      "properties"=>{"field"=>"user.emailaddress"}}
   end
+
+  def self.company_required_field_missing(field)
+    {"code" => "company.#{field.underscore}.required_field_missing",
+     "property" => field,
+     "message" => "Validation error. Cannot create Company without #{field}.",
+     "developerMessage" => "Missing required field #{field.split('.').last}",
+     "properties" => {"field" => field}}
+  end
+
+  def self.company_field_not_acceptable(field)
+    {"code" => "company.#{field.underscore}.not_acceptable",
+     "property" => field,
+     "message" => "Validation error. Cannot create Company with #{field} in request. The value of #{field} is a system-generated read-only value.",
+     "developerMessage" => "instance matched a schema which it should not have",
+     "properties" => {"field" => field}}
+  end
 end
