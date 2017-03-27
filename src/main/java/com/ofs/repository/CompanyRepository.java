@@ -23,9 +23,7 @@ public class CompanyRepository extends BaseCouchbaseRepository<Company> {
     CouchbaseFactory couchbaseFactory;
 
     public void addCompany(Company company) throws JsonProcessingException, com.fasterxml.jackson.core.JsonProcessingException {
-        JsonObject jsonObject = JsonObject.fromJson(ofsObjectMapper.writeValueAsString(company));
-        JsonDocument jsonDocument = JsonDocument.create(company.getId().toString(), jsonObject);
-        couchbaseFactory.getCompanyBucket().insert(jsonDocument);
+        add(company.getId().toString(), couchbaseFactory.getCompanyBucket(), company);
     }
 
     public Optional<Company> getCompanyById(String id) throws Exception {

@@ -4,11 +4,14 @@ import com.couchbase.client.core.BackpressureException;
 import com.couchbase.client.core.RequestCancelledException;
 import com.couchbase.client.java.Bucket;
 import com.couchbase.client.java.document.JsonDocument;
+import com.couchbase.client.java.document.json.JsonObject;
 import com.couchbase.client.java.error.TemporaryFailureException;
 import com.couchbase.client.java.query.N1qlQueryResult;
 import com.couchbase.client.java.query.N1qlQueryRow;
 import com.couchbase.client.java.query.ParameterizedN1qlQuery;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.ofs.models.User;
 import com.ofs.server.errors.ServiceUnavailableException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,6 +67,31 @@ public abstract class BaseCouchbaseRepository<T> {
         else {
             return mapResultsToObject(jsonDocument.content().toMap(), clazz);
         }
+    }
+
+    public void add(String id, Bucket bucket, Object object) throws JsonProcessingException {
+        Objects.requireNonNull(id);
+        Objects.requireNonNull(bucket);
+        Objects.requireNonNull(object);
+
+        JsonObject jsonObject = JsonObject.fromJson(ofsObjectMapper.writeValueAsString(object));
+        JsonDocument jsonDocument = JsonDocument.create(id, jsonObject);
+        couchbaseFactory.getUserBucket().insert(jsonDocument);
+    }
+
+    public void update(String id, Bucket bucket, Object object) throws JsonProcessingException {
+        Objects.requireNonNull(id);
+        Objects.requireNonNull(bucket);
+        Objects.requireNonNull(object);
+
+        JsonDocument userDocument = bucket.getAndLock(id, 5);
+        JsonDocument updatedDocument = modifyJsonDocument(id, userDocument, object);
+        couchbaseFactory.getUserBucket().replace(updatedDocument);
+    }
+
+    private JsonDocument modifyJsonDocument(String id, JsonDocument jsonDocument, Object object) throws com.fasterxml.jackson.core.JsonProcessingException {
+        JsonObject jsonObject = JsonObject.fromJson(ofsObjectMapper.writeValueAsString(object));
+        return JsonDocument.create(id, jsonObject, jsonDocument.cas());
     }
 
     private JsonDocument queryForObject(String id, Bucket bucket) {

@@ -42,7 +42,8 @@ public class User extends BaseOFSEntity {
         this.setPassword((String) map.get("password"));
         this.setEmailAddress((String) map.get("emailAddress"));
         this.setToken((String) map.get("token"));
-        this.setTokenExpDate((ZonedDateTime) map.get("tokenExpDate"));
+        String tokenExpDate = (String) map.get("tokenExpDate");
+        this.setTokenExpDate(tokenExpDate != null ? ZonedDateTime.parse(tokenExpDate) : null);
         this.setActiveFlag((Boolean) map.get("activeFlag"));
     }
 
@@ -78,7 +79,8 @@ public class User extends BaseOFSEntity {
         user.setPassword((String) userMap.get("password"));
         user.setEmailAddress((String) userMap.get("emailAddress"));
         user.setToken((String) userMap.get("token"));
-        user.setTokenExpDate((ZonedDateTime) userMap.get("tokenExpDate"));
+        String tokenExpDate = (String) userMap.get("tokenExpDate");
+        user.setTokenExpDate(tokenExpDate != null ? ZonedDateTime.parse(tokenExpDate) : null);
         user.setActiveFlag((Boolean) userMap.get("activeFlag"));
 
         return user;

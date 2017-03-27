@@ -21,9 +21,8 @@ public class UserRepository extends BaseCouchbaseRepository<User> {
     CouchbaseFactory couchbaseFactory;
 
     public void addUser(User user) throws JsonProcessingException, com.fasterxml.jackson.core.JsonProcessingException {
-        JsonObject jsonObject = JsonObject.fromJson(ofsObjectMapper.writeValueAsString(user));
-        JsonDocument jsonDocument = JsonDocument.create(user.getId().toString(), jsonObject);
-        couchbaseFactory.getUserBucket().insert(jsonDocument);
+        Objects.requireNonNull(user);
+        add(user.getId().toString(), couchbaseFactory.getUserBucket(), user);
     }
 
     public Optional<User> getUserById(String id) {
@@ -69,9 +68,11 @@ public class UserRepository extends BaseCouchbaseRepository<User> {
     public void updateUserToken(User user) throws com.fasterxml.jackson.core.JsonProcessingException {
         Objects.requireNonNull(user);
 
-        JsonDocument userDocument = couchbaseFactory.getUserBucket().getAndLock(user.getId().toString(), 5);
-        JsonDocument updatedDocument = modifyJsonDocument(userDocument, user);
-        couchbaseFactory.getUserBucket().replace(updatedDocument);
+//        JsonDocument userDocument = couchbaseFactory.getUserBucket().getAndLock(user.getId().toString(), 5);
+//        JsonDocument updatedDocument = modifyJsonDocument(userDocument, user);
+//        couchbaseFactory.getUserBucket().replace(updatedDocument);
+
+        update(user.getId().toString(), couchbaseFactory.getUserBucket(), user);
     }
 
     private JsonDocument modifyJsonDocument(JsonDocument jsonDocument, User user) throws com.fasterxml.jackson.core.JsonProcessingException {

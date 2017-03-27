@@ -1,6 +1,7 @@
 package com.ofs.controller;
 
 import com.ofs.models.BasicAuthUser;
+
 import com.ofs.models.User;
 import com.ofs.repository.UserRepository;
 import com.ofs.server.OFSController;
