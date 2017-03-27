@@ -16,7 +16,6 @@ public class ValidateBasicAuth implements UserGetTokenValidation {
     @Autowired
     UserRepository userRepository;
 
-
     @Override
     public void validate(BasicAuthUser basicAuthUser, OFSErrors errors) throws Exception {
         Optional<User> userOptional = userRepository.getUserByUserName(basicAuthUser.getUserName());

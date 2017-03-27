@@ -41,7 +41,7 @@ public class UserService {
         String token = generateJWTToken(user);
 
         user.setToken(token);
-        user.setTokenExpDate(Dates.now());
+        user.setTokenExpDate(Dates.now().plusMinutes(20));
 
         userRepository.updateUserToken(user);
         return TokenResponse.generateBearerTokenResponse(token);

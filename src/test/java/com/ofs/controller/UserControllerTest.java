@@ -9,6 +9,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +21,7 @@ import java.util.UUID;
 
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 
 public class UserControllerTest extends WebIntegrationTestbootstrap {
@@ -52,6 +54,16 @@ public class UserControllerTest extends WebIntegrationTestbootstrap {
         assertEquals(HttpStatus.OK, response.getStatusCode());
     }
 
+    @Test
+    public void getToken_happyPathSucceeds() throws Exception {
+        when(userRepository.getUserByUserName(anyString())).thenReturn(Optional.of(generateResponseUser()));
+
+        HttpEntity<String> entity = new HttpEntity<>(generateAuthHeader());
+
+        ResponseEntity<String> response = restTemplate.exchange(apiUrl("users/getToken"), HttpMethod.GET, entity, String.class);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+    }
+
     private User generateResponseUser() {
         User user = new User();
 
@@ -60,9 +72,10 @@ public class UserControllerTest extends WebIntegrationTestbootstrap {
         user.setLastName("lName");
         user.setRole(User.Role.ACCOUNT_MANAGER);
         user.setUserName("name.lName");
-        user.setPassword("password");
+        user.setPassword("/x/sahoFY1NaZvnjfR5hb6vVb8azDOyRSv4gLZ5eFcMiGFEz4hFxtnYCPPsOhXHy");
         user.setEmailAddress("name.lName@place.com");
         user.setCompany(generateDefaultCompany());
+        user.setActiveFlag(true);
 
         return user;
     }
@@ -89,6 +102,12 @@ public class UserControllerTest extends WebIntegrationTestbootstrap {
         company.setName("demoCompany");
 
         return company;
+    }
+
+    private  HttpHeaders generateAuthHeader() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("authorization", "Basic bXBlbm5hNjpwYXNzd29yZA==");
+        return headers;
     }
 
     @Data

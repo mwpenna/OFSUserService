@@ -12,6 +12,7 @@ import com.couchbase.client.java.query.DefaultAsyncN1qlQueryRow;
 import com.couchbase.client.java.query.DefaultN1qlQueryResult;
 import com.couchbase.client.java.query.N1qlQueryResult;
 import com.couchbase.client.java.query.ParameterizedN1qlQuery;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ofs.models.User;
 import com.ofs.server.config.JacksonConfiguration;
@@ -34,6 +35,8 @@ import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -177,6 +180,21 @@ public class BaseCouchbaseRepositoryTest {
         when(bucket.get(anyString())).thenReturn(JsonDocument.create(id.toString(), generateUserJsonObject()));
         Optional<User> userOptional = objectUnderTest.queryForObjectById(id.toString(), bucket, User.class);
         assertTrue(userOptional.isPresent());
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void updateObject_shouldThrowNPwhenIdNull() throws JsonProcessingException {
+        objectUnderTest.update(null, bucket, user);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void updateObject_shouldThrowNPwhenBucketNull() throws JsonProcessingException {
+        objectUnderTest.update("123", null, user);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void updateObject_shouldThrowNPwhenObjectNull() throws JsonProcessingException {
+        objectUnderTest.update("123", bucket, null);
     }
 
     private JsonObject generateUserJsonObject() {

@@ -5,11 +5,11 @@ import lombok.Data;
 @Data
 public class BasicAuthUser {
 
-    BasicAuthUser() {
+    public BasicAuthUser() {
 
     }
 
-    BasicAuthUser(String userName, String password) {
+    public BasicAuthUser(String userName, String password) {
         this.userName = userName;
         this.password = password;
     }
