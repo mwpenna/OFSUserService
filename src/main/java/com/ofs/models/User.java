@@ -29,6 +29,8 @@ public class User extends BaseOFSEntity {
     }
 
     public  User(Map map) {
+        String href = (String)map.get("href");
+        this.setHref(href != null ? URI.create(href) : null);
         this.setId(UUID.fromString((String)map.get("id")));
         this.setFirstName((String) map.get("firstName"));
         this.setLastName((String) map.get("lastName"));

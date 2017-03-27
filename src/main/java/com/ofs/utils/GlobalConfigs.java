@@ -13,4 +13,7 @@ public class GlobalConfigs {
 
     @Value("${clusterPassword}")
     private String clusterPassword;
+
+    @Value("${sharedSecret}")
+    private String sharedSecret;
 }

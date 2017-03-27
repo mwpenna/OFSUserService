@@ -1,21 +1,17 @@
 package com.ofs.repository;
 
-import com.couchbase.client.core.BackpressureException;
-import com.couchbase.client.core.RequestCancelledException;
 import com.couchbase.client.deps.com.fasterxml.jackson.core.JsonProcessingException;
 import com.couchbase.client.java.document.JsonDocument;
 import com.couchbase.client.java.document.json.JsonObject;
-import com.couchbase.client.java.error.TemporaryFailureException;
 import com.couchbase.client.java.query.ParameterizedN1qlQuery;
 import com.ofs.models.User;
-import com.ofs.server.errors.ServiceUnavailableException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.Optional;
-
 
 @Repository
 @Slf4j
@@ -68,6 +64,19 @@ public class UserRepository extends BaseCouchbaseRepository<User> {
             log.info("No results returned for getUserByEmailAddress with emailaddress: {}", emailAddress);
             return Optional.empty();
         }
+    }
+
+    public void updateUserToken(User user) throws com.fasterxml.jackson.core.JsonProcessingException {
+        Objects.requireNonNull(user);
+
+        JsonDocument userDocument = couchbaseFactory.getUserBucket().getAndLock(user.getId().toString(), 5);
+        JsonDocument updatedDocument = modifyJsonDocument(userDocument, user);
+        couchbaseFactory.getUserBucket().replace(updatedDocument);
+    }
+
+    private JsonDocument modifyJsonDocument(JsonDocument jsonDocument, User user) throws com.fasterxml.jackson.core.JsonProcessingException {
+        JsonObject jsonObject = JsonObject.fromJson(ofsObjectMapper.writeValueAsString(user));
+        return JsonDocument.create(user.getId().toString(), jsonObject, jsonDocument.cas());
     }
 
     private String generateGetByUserNameQuery() {
