@@ -76,7 +76,7 @@ public abstract class BaseCouchbaseRepository<T> {
 
         JsonObject jsonObject = JsonObject.fromJson(ofsObjectMapper.writeValueAsString(object));
         JsonDocument jsonDocument = JsonDocument.create(id, jsonObject);
-        couchbaseFactory.getUserBucket().insert(jsonDocument);
+        bucket.insert(jsonDocument);
     }
 
     public void update(String id, Bucket bucket, Object object) throws JsonProcessingException {

@@ -124,17 +124,34 @@ public class UserController {
 
 
     private String getValidAuthHeader(HttpHeaders headers) {
+
         List<String> authHeader = headers.get("authorization");
-        if(authHeader == null || authHeader.isEmpty() || authHeader.size()<2) {
+        if(!validateAuthorizationHeader(authHeader)) {
             throw new ForbiddenException();
         }
 
         String authString = headers.get("authorization").get(0);
-        if(authString == null) {
+        if(!validateAuthString(authString)) {
             throw new ForbiddenException();
         }
 
         return authString;
+    }
+
+    private boolean validateAuthString(String authString) {
+        if(authString == null || authString.split(" ").length < 2) {
+            return false;
+        }
+
+        return true;
+    }
+
+    private boolean validateAuthorizationHeader(List<String> authHeader) {
+        if(authHeader == null || authHeader.isEmpty()) {
+            return false;
+        }
+
+        return true;
     }
 
     private BasicAuthUser getUserFromAuthentication(String authString) {

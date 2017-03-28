@@ -54,4 +54,10 @@ class Errors
      "developerMessage" => "instance matched a schema which it should not have",
      "properties" => {"field" => field}}
   end
+
+  def self.user_authentication_failed
+    {"code"=>"user.authentication.failed",
+     "message"=>"Username/Password is not valid. Please retry with correct credentials.",
+     "developerMessage"=>"Username/Password is not valid. Please retry with correct credentials."}
+  end
 end

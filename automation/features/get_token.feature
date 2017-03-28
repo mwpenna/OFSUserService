@@ -23,13 +23,13 @@ Feature: Token is generated and returned when get token is called
   @pending
   Scenario: Try to get a token when user is inactive
     Given A user exists in an inactive state
-    When A request is made to get a token with valid username/password
+    When A request is made to get a token with valid username and password
     Then the response should have a status of 400
     And I should see an error message indicating user is not active
 
   Scenario: Try to get a token with valid username/password
     Given A company and user exists
-    When A request is made to get a token with valid username/password
+    When A request is made to get a token with valid username and password
     Then the response should have a status of 200
     And I should see a token response was returned
 
