@@ -125,7 +125,7 @@ public class UserController {
 
     private String getValidAuthHeader(HttpHeaders headers) {
         List<String> authHeader = headers.get("authorization");
-        if(authHeader == null || authHeader.isEmpty()) {
+        if(authHeader == null || authHeader.isEmpty() || authHeader.size()<2) {
             throw new ForbiddenException();
         }
 

@@ -3,11 +3,11 @@ Feature: Token is generated and returned when get token is called
 
   Scenario: Try to get a token when basic auth is missing
     When A request is made to get a token with authentication header missing
-    Then the response should have a status of 401
+    Then the response should have a status of 403
 
   Scenario: Try to get a token when basic auth value missing
     When A request is made to get a token with authentication header null
-    Then the response should have a status of 401
+    Then the response should have a status of 403
 
   Scenario: Try to get a token with invalid password
     Given A company and user exists
