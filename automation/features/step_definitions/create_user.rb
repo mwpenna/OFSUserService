@@ -16,6 +16,7 @@ Given(/^A company and user exists$/) do
   email = name + "@pokemon.com"
   @user = FactoryGirl.build(:user, userName: name, emailAddress: email, company_href: @company.href, company_name: @company.name)
   @result = @service_client.post_to_url("/users", @user.create_to_json)
+  @location = @result.headers['location']
 end
 
 When(/^A request to create a user is received with missing (.*?)$/) do |field|

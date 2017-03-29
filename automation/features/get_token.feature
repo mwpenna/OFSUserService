@@ -34,26 +34,26 @@ Feature: Token is generated and returned when get token is called
     And I should see a token response was returned
 
   Scenario: User updated with token after get token is called
-    Given A company and user exists with token
-    When A request to get the user is received
+    Given A company and user exists
+    When A request is made to get a token with valid username and password
     Then the response should have a status of 200
-    And I should see token is populated in the database for the user
+    And I should see the user is populated with a token
 
   Scenario: User updated with token exp date after get token is called
-    Given A company and user exists with token
-    When A request to get the user is received
+    Given A company and user exists
+    When A request is made to get a token with valid username and password
     Then the response should have a status of 200
-    And I should see tokenExpDate is populated in the database for the user
+    And I should see the user is populated with a tokenExpDate
 
   Scenario: Get token is called a second time for a user token response is correct
     Given A company and user exists with token
-    When A request is made to get a token with valid username/password
+    When A request is made to get a token with valid username and password
     Then the response should have a status of 200
     And I should see a token response was returned
 
   Scenario: Get token is called a second time for a user token update for user in db
     Given A company and user exists with token
-    When A request is made to get a token with valid username/password
+    When A request is made to get a token with valid username and password
     Then the response should have a status of 200
     And I should see the user is updated with the new token values
 
