@@ -43,7 +43,7 @@ public class UserService {
         user.setToken(token);
         user.setTokenExpDate(Dates.now().plusMinutes(20));
 
-        userRepository.updateUserToken(user);
+        userRepository.updateUser(user);
         return TokenResponse.generateBearerTokenResponse(token);
     }
 

@@ -95,7 +95,9 @@ public class UserController {
     public ResponseEntity update(String id, User user) { return ResponseEntity.noContent().build();}
 
     @DeleteMapping(value = "/id/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity delete(String id) { return ResponseEntity.noContent().build();}
+    public ResponseEntity delete(String id) {
+        return ResponseEntity.noContent().build();
+    }
 
     @GetMapping(value="/getToken")
     public ResponseEntity getToken(@RequestHeader HttpHeaders headers) throws Exception {

@@ -5,6 +5,7 @@ import com.couchbase.client.core.RequestCancelledException;
 import com.couchbase.client.java.Bucket;
 import com.couchbase.client.java.document.JsonDocument;
 import com.couchbase.client.java.document.json.JsonObject;
+import com.couchbase.client.java.error.DocumentDoesNotExistException;
 import com.couchbase.client.java.error.TemporaryFailureException;
 import com.couchbase.client.java.query.N1qlQueryResult;
 import com.couchbase.client.java.query.N1qlQueryRow;
@@ -12,6 +13,7 @@ import com.couchbase.client.java.query.ParameterizedN1qlQuery;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.ofs.models.User;
+import com.ofs.server.errors.NotFoundException;
 import com.ofs.server.errors.ServiceUnavailableException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,9 +30,6 @@ import static java.lang.String.format;
 
 @Slf4j
 public abstract class BaseCouchbaseRepository<T> {
-
-    @Autowired
-    CouchbaseFactory couchbaseFactory;
 
     @Autowired
     @Qualifier("ofsObjectMapper")
@@ -86,7 +85,12 @@ public abstract class BaseCouchbaseRepository<T> {
 
         JsonDocument userDocument = bucket.getAndLock(id, 5);
         JsonDocument updatedDocument = modifyJsonDocument(id, userDocument, object);
-        couchbaseFactory.getUserBucket().replace(updatedDocument);
+        bucket.replace(updatedDocument);
+    }
+
+    public void delete(String id, Bucket bucket) {
+        Objects.requireNonNull(id);
+        bucket.remove(id);
     }
 
     private JsonDocument modifyJsonDocument(String id, JsonDocument jsonDocument, Object object) throws com.fasterxml.jackson.core.JsonProcessingException {

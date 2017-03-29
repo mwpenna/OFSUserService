@@ -3,8 +3,10 @@ package com.ofs.repository;
 import com.couchbase.client.deps.com.fasterxml.jackson.core.JsonProcessingException;
 import com.couchbase.client.java.document.JsonDocument;
 import com.couchbase.client.java.document.json.JsonObject;
+import com.couchbase.client.java.error.DocumentDoesNotExistException;
 import com.couchbase.client.java.query.ParameterizedN1qlQuery;
 import com.ofs.models.User;
+import com.ofs.server.errors.NotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -22,7 +24,10 @@ public class UserRepository extends BaseCouchbaseRepository<User> {
 
     public void addUser(User user) throws JsonProcessingException, com.fasterxml.jackson.core.JsonProcessingException {
         Objects.requireNonNull(user);
+
+        log.info("Attempting to add user with id: {}", user.getId());
         add(user.getId().toString(), couchbaseFactory.getUserBucket(), user);
+        log.info("User with id: {} has been added", user.getId());
     }
 
     public Optional<User> getUserById(String id) {
@@ -65,19 +70,22 @@ public class UserRepository extends BaseCouchbaseRepository<User> {
         }
     }
 
-    public void updateUserToken(User user) throws com.fasterxml.jackson.core.JsonProcessingException {
+    public void updateUser(User user) throws com.fasterxml.jackson.core.JsonProcessingException {
         Objects.requireNonNull(user);
 
-//        JsonDocument userDocument = couchbaseFactory.getUserBucket().getAndLock(user.getId().toString(), 5);
-//        JsonDocument updatedDocument = modifyJsonDocument(userDocument, user);
-//        couchbaseFactory.getUserBucket().replace(updatedDocument);
-
-        update(user.getId().toString(), couchbaseFactory.getUserBucket(), user);
+        try {
+            log.info("Attempting to update user with id: {}", user.getId());
+            update(user.getId().toString(), couchbaseFactory.getUserBucket(), user);
+            log.info("user with id: {} has been updated", user.getId());
+        }
+        catch(DocumentDoesNotExistException e) {
+            log.warn("User with id: {} was not found", user.getId());
+            throw new NotFoundException();
+        }
     }
 
-    private JsonDocument modifyJsonDocument(JsonDocument jsonDocument, User user) throws com.fasterxml.jackson.core.JsonProcessingException {
-        JsonObject jsonObject = JsonObject.fromJson(ofsObjectMapper.writeValueAsString(user));
-        return JsonDocument.create(user.getId().toString(), jsonObject, jsonDocument.cas());
+    public void deleteUser(String id) {
+        
     }
 
     private String generateGetByUserNameQuery() {
