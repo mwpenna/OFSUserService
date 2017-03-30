@@ -22,4 +22,7 @@ class ServiceClient
       return HTTParty.get(url, :headers => { 'Authorization' => authHeader });
     end
 
+    def delete_by_url(url)
+      return HTTParty.delete(url);
+    end
   end
