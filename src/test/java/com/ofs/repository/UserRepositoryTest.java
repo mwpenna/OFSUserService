@@ -5,6 +5,7 @@ import com.couchbase.client.java.Bucket;
 import com.couchbase.client.java.Cluster;
 import com.couchbase.client.java.document.JsonDocument;
 import com.couchbase.client.java.document.json.JsonObject;
+import com.couchbase.client.java.error.DocumentDoesNotExistException;
 import com.couchbase.client.java.query.AsyncN1qlQueryRow;
 import com.couchbase.client.java.query.DefaultAsyncN1qlQueryRow;
 import com.couchbase.client.java.query.DefaultN1qlQueryResult;
@@ -13,6 +14,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ofs.models.Company;
 import com.ofs.models.User;
+import com.ofs.server.errors.NotFoundException;
 import com.ofs.server.utils.Dates;
 import org.junit.Before;
 import org.junit.Test;
@@ -152,6 +154,12 @@ public class UserRepositoryTest {
     public void deleteUserById_shouldCallDelete() {
         objectUnderTest.deleteUserById("123");
         verify(bucket, times(1)).remove("123");
+    }
+
+    @Test(expected = NotFoundException.class)
+    public void deleteUserById_shouldThrowNotFoundExcpetionWhenDocumentDoesNotExists() {
+        when(bucket.remove(anyString())).thenThrow(new DocumentDoesNotExistException());
+        objectUnderTest.deleteUserById("123");
     }
 
     private JsonObject generateUserJsonObject() {
