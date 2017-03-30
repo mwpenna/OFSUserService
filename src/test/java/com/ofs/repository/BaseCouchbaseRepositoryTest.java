@@ -197,6 +197,16 @@ public class BaseCouchbaseRepositoryTest {
         objectUnderTest.update("123", bucket, null);
     }
 
+    @Test(expected = NullPointerException.class)
+    public void deleteWithNullId_shouldThrowNP() {
+        objectUnderTest.delete(null, bucket);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void deleteWithNullBucket_shouldThrowNP() {
+        objectUnderTest.delete("123", null);
+    }
+
     private JsonObject generateUserJsonObject() {
         JsonObject jsonObject = JsonObject.create();
         jsonObject.put("id", id.toString());

@@ -64,6 +64,13 @@ public class UserControllerTest extends WebIntegrationTestbootstrap {
         assertEquals(HttpStatus.OK, response.getStatusCode());
     }
 
+    @Test
+    public void deleteUser_happyPathSucceeds() {
+        HttpEntity<String> entity = new HttpEntity<>(generateAuthHeader());
+        ResponseEntity<String> response = restTemplate.exchange(apiUrl("users/id/" + id), HttpMethod.DELETE, entity, String.class);
+        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+    }
+
     private User generateResponseUser() {
         User user = new User();
 

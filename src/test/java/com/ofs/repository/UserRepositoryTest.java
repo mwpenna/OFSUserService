@@ -18,6 +18,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.internal.matchers.Null;
 
 import java.net.URI;
 import java.util.ArrayList;
@@ -140,6 +141,17 @@ public class UserRepositoryTest {
         when(bucket.get(anyString())).thenReturn(JsonDocument.create(id.toString(), generateUserJsonObject()));
         Optional<User> userOptional = objectUnderTest.getUserById(id.toString());
         assertTrue(userOptional.isPresent());
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void deleteUserByIdNullId_shouldThrowNPException() {
+        objectUnderTest.deleteUserById(null);
+    }
+
+    @Test
+    public void deleteUserById_shouldCallDelete() {
+        objectUnderTest.deleteUserById("123");
+        verify(bucket, times(1)).remove("123");
     }
 
     private JsonObject generateUserJsonObject() {
