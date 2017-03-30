@@ -94,8 +94,9 @@ public class UserController {
     @PostMapping(value = "/id/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity update(String id, User user) { return ResponseEntity.noContent().build();}
 
-    @DeleteMapping(value = "/id/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity delete(String id) {
+    @DeleteMapping(value = "/id/{id}")
+    public ResponseEntity delete(@PathVariable("id") String id) {
+        userRepository.deleteUserById(id);
         return ResponseEntity.noContent().build();
     }
 

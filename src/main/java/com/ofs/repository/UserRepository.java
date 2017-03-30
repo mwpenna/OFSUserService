@@ -84,8 +84,18 @@ public class UserRepository extends BaseCouchbaseRepository<User> {
         }
     }
 
-    public void deleteUser(String id) {
-        
+    public void deleteUserById(String id) {
+        Objects.requireNonNull(id);
+
+        try{
+            log.info("Attempting to delete user with id: {}", id);
+            delete(id, couchbaseFactory.getUserBucket());
+            log.info("user with id: {} has been delete", id);
+        }
+        catch (DocumentDoesNotExistException e) {
+            log.warn("User with id: {} was not found", id);
+            throw new NotFoundException();
+        }
     }
 
     private String generateGetByUserNameQuery() {
