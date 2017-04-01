@@ -71,6 +71,19 @@ public class UserControllerTest extends WebIntegrationTestbootstrap {
         assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
     }
 
+    @Test
+    public void updateUser_happyPathSucceeds() throws Exception {
+        when(userRepository.getUserById(anyString())).thenReturn(Optional.of(generateResponseUser()));
+        HttpHeaders headers = createHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        String request = ofsObjectMapper.writeValueAsString(generateUpdateUser());
+
+        HttpEntity<String> entity = new HttpEntity<>(request, headers);
+        ResponseEntity<String> response = restTemplate.postForEntity(apiUrl("users/id/"+id), entity, String.class);
+        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+    }
+
     private User generateResponseUser() {
         User user = new User();
 
@@ -83,6 +96,18 @@ public class UserControllerTest extends WebIntegrationTestbootstrap {
         user.setEmailAddress("name.lName@place.com");
         user.setCompany(generateDefaultCompany());
         user.setActiveFlag(true);
+
+        return user;
+    }
+
+    private User generateUpdateUser() {
+        User user = new User();
+
+        user.setFirstName("name2");
+        user.setLastName("lName2");
+        user.setRole(User.Role.ADMIN);
+        user.setEmailAddress("name.lName2@place.com");
+        user.setActiveFlag(false);
 
         return user;
     }
