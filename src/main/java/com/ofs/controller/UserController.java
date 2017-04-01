@@ -10,6 +10,7 @@ import com.ofs.server.errors.ForbiddenException;
 import com.ofs.server.errors.NotFoundException;
 import com.ofs.server.form.OFSServerForm;
 import com.ofs.server.form.ValidationSchema;
+import com.ofs.server.form.update.ChangeSet;
 import com.ofs.server.model.OFSErrors;
 import com.ofs.service.UserService;
 import com.ofs.utils.GlobalConfigs;
@@ -32,6 +33,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.io.IOException;
 import java.net.URI;
 import java.util.Base64;
 import java.util.List;
@@ -91,9 +93,28 @@ public class UserController {
         }
     }
 
+    @ValidationSchema(value = "/user-update.json")
     @PostMapping(value = "/id/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity update(String id, User user) {
-        return ResponseEntity.noContent().build();
+    public ResponseEntity update(@PathVariable String id, OFSServerForm<User> form) throws IOException {
+        Optional<User> userOptional = userRepository.getUserById(id);
+
+        if(userOptional.isPresent()) {
+            User user = userOptional.get();
+            ChangeSet changeSet = form.update(user);
+
+            if(changeSet.size()>0) {
+                if(changeSet.contains("password")) {
+                    user.setPassword(encryptPassword(user.getPassword()));
+                }
+
+                userRepository.updateUser(user);
+            }
+            return ResponseEntity.noContent().build();
+        }
+        else {
+            log.error("User with id: {} not found", id);
+            throw new NotFoundException();
+        }
     }
 
     @DeleteMapping(value = "/id/{id}")

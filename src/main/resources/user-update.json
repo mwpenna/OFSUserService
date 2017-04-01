@@ -1,0 +1,55 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "user",
+  "description": "JSON User Update",
+  "type" : "object",
+  "properties": {
+    "id": {
+      "not": {}
+    },
+    "href": {
+      "not": {}
+    },
+    "createdOn": {
+      "not": {}
+    },
+    "token": {
+      "not": {}
+    },
+    "tokenExpDate": {
+      "type": "object"
+    },
+    "activeFlag": {
+      "type": "boolean"
+    },
+    "firstName": {
+      "type": "string"
+    },
+    "lastName": {
+      "type": "string"
+    },
+    "company": {
+      "not" : {}
+    },
+    "role": {
+      "type": "string",
+      "enum": [
+        "ADMIN",
+        "ACCOUNT_MANAGER",
+        "WAREHOUSE",
+        "CUSTOMER"
+      ]
+    },
+    "userName": {
+      "not" : {}
+    },
+    "password": {
+      "type": "string"
+    },
+    "emailAddress": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": true
+}
+
