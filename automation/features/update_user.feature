@@ -9,37 +9,37 @@ Feature: User is updated when update user endpoint is called
     Given A company and user exists
     When A request to update the user id
     Then the response should have a status of 400
-    And I should see an error message indicating id not allowed
+    And I should see an error message with id not allowed
 
   Scenario: Try to update a users href
     Given A company and user exists
     When A request to update the user href
     Then the response should have a status of 400
-    And I should see an error message indicating href not allowed
+    And I should see an error message with href not allowed
 
   Scenario: Try to update a users createdOn
     Given A company and user exists
     When A request to update the user createdOn
     Then the response should have a status of 400
-    And I should see an error message indicating createdOn not allowed
+    And I should see an error message with createdOn not allowed
 
   Scenario: Try to update a users token
     Given A company and user exists
     When A request to update the user token
     Then the response should have a status of 400
-    And I should see an error message indicating token not allowed
+    And I should see an error message with token not allowed
 
   Scenario: Try to update a users company
     Given A company and user exists
     When A request to update the user company
     Then the response should have a status of 400
-    And I should see an error message indicating company not allowed
+    And I should see an error message with company not allowed
 
   Scenario: Try to update a users userName
     Given A company and user exists
     When A request to update the user userName
     Then the response should have a status of 400
-    And I should see an error message indicating userName not allowed
+    And I should see an error message with userName not allowed
 
   Scenario: Try to update a users tokenExpDate
     Given A company and user exists

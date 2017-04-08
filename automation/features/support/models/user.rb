@@ -82,4 +82,24 @@ class User
         emailAddress: self.emailAddress
     }.to_json
   end
+
+  def update_to_hash
+    {
+        firstName: self.firstName,
+        lastName: self.lastName,
+        role: self.role,
+        password: self.password,
+        emailAddress: self.emailAddress
+    }
+  end
+
+  def update_to_json
+    {
+        firstName: self.firstName,
+        lastName: self.lastName,
+        role: self.role,
+        password: self.password,
+        emailAddress: self.emailAddress
+    }.to_json
+  end
 end
