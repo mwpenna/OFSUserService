@@ -60,4 +60,13 @@ class Errors
      "message"=>"Username/Password is not valid. Please retry with correct credentials.",
      "developerMessage"=>"Username/Password is not valid. Please retry with correct credentials."}
   end
+
+  def self.user_role_invalid
+    {"code"=>"user.role.invalid_enum_value",
+     "property"=>"role",
+     "message"=>"Validation error. Cannot create user with status - must be ADMIN, ACCOUNT_MANAGER, WAREHOUSE, CUSTOMER. Passed in value TEST.",
+     "developerMessage"=>"instance value (\"TEST\") not found in enum (possible values: [\"ADMIN\",\"ACCOUNT_MANAGER\",\"WAREHOUSE\",\"CUSTOMER\"])",
+     "properties"=>{"field"=>"role", "valid"=>"[\"ADMIN\",\"ACCOUNT_MANAGER\",\"WAREHOUSE\",\"CUSTOMER\"]", "found"=>"TEST"}
+    }
+  end
 end

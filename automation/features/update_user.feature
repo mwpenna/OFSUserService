@@ -7,37 +7,37 @@ Feature: User is updated when update user endpoint is called
 
   Scenario: Try to update a users id
     Given A company and user exists
-    When A request to update the user id
+    When A request to update the user with invalid id
     Then the response should have a status of 400
     And I should see an error message with id not allowed
 
   Scenario: Try to update a users href
     Given A company and user exists
-    When A request to update the user href
+    When A request to update the user with invalid href
     Then the response should have a status of 400
     And I should see an error message with href not allowed
 
   Scenario: Try to update a users createdOn
     Given A company and user exists
-    When A request to update the user createdOn
+    When A request to update the user with invalid createdOn
     Then the response should have a status of 400
     And I should see an error message with createdOn not allowed
 
   Scenario: Try to update a users token
     Given A company and user exists
-    When A request to update the user token
+    When A request to update the user with invalid token
     Then the response should have a status of 400
     And I should see an error message with token not allowed
 
   Scenario: Try to update a users company
     Given A company and user exists
-    When A request to update the user company
+    When A request to update the user with invalid company
     Then the response should have a status of 400
     And I should see an error message with company not allowed
 
   Scenario: Try to update a users userName
     Given A company and user exists
-    When A request to update the user userName
+    When A request to update the user with invalid userName
     Then the response should have a status of 400
     And I should see an error message with userName not allowed
 
@@ -81,7 +81,7 @@ Feature: User is updated when update user endpoint is called
     Given A company and user exists
     When A request to update the user password
     Then the response should have a status of 204
-    And I should see the password was updated
+    And I should see the password has changed
 
   Scenario: Try to update a users emailAddress
     Given A company and user exists

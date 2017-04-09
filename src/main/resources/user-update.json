@@ -17,7 +17,7 @@
       "not": {}
     },
     "tokenExpDate": {
-      "type": "object"
+      "type" : ["string" , "null"], "format" : "date-time"
     },
     "activeFlag": {
       "type": "boolean"
