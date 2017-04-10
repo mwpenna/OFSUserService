@@ -140,7 +140,7 @@ public class UserController {
     public JWTSubject authenticateUser(@RequestHeader HttpHeaders headers) throws IOException {
         String authString = getValidAuthHeader(headers);
         String token = getBeaerTokenFromAuthentication(authString);
-        return userService.authenticateToken(token);
+        return userService.authenticate(token);
     }
 
     private String encryptPassword(String password) {

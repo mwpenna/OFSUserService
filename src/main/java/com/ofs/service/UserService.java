@@ -12,6 +12,7 @@ import com.ofs.utils.GlobalConfigs;
 import com.ofs.utils.StringUtils;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtBuilder;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.extern.slf4j.Slf4j;
@@ -22,11 +23,12 @@ import org.springframework.stereotype.Component;
 import javax.crypto.spec.SecretKeySpec;
 import javax.xml.bind.DatatypeConverter;
 import java.io.IOException;
-import java.net.URI;
 import java.security.Key;
+import java.time.Duration;
 import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.Optional;
+import java.util.UUID;
 
 @Component
 @Slf4j
@@ -53,17 +55,68 @@ public class UserService {
         return TokenResponse.generateBearerTokenResponse(token);
     }
 
-    public JWTSubject authenticateToken(String token) throws IOException {
-        JWTSubject jwtSubject = parseToken(token);
+    public JWTSubject authenticate(String token) throws IOException {
+        JWTSubject jwtSubject;
+
+        try {
+            jwtSubject = parseToken(token);
+        }
+        catch (JwtException jwtException) {
+            log.error("Exception while parsing token: {}. Exception: ", token, jwtException);
+            throw new ForbiddenException();
+        }
         log.info("Parsed token for User: {}", StringUtils.getIdFromURI(jwtSubject.getUserHref()));
 
         Optional<User> optionalUser = userRepository.getUserById(StringUtils.getIdFromURI(jwtSubject.getUserHref()));
+        User user = authenticateUser(optionalUser, token, StringUtils.getIdFromURI(jwtSubject.getUserHref()));
 
-        if(!optionalUser.isPresent()) {
-            throw new ForbiddenException();
-        }
+        log.debug("Attempting to update user with id: {}", user.getId());
+        user.setTokenExpDate(Dates.now().plusMinutes(20));
+        userRepository.updateUser(user);
+        log.debug("user with id: {} successfully updated", user.getId());
 
         return jwtSubject;
+    }
+
+    private User authenticateUser(Optional<User> optionalUser, String token, String id) {
+        validateUser(optionalUser, id);
+        User user = optionalUser.get();
+
+        validateToken(user, token, id);
+        validateTokenExpDate(user.getTokenExpDate(), id);
+
+        return user;
+    }
+
+    private void validateTokenExpDate(ZonedDateTime tokenExpDate, String id) {
+        Duration duration = Duration.between(tokenExpDate ,Dates.now());
+        long minutes = duration.toMinutes();
+        if(minutes> 20) {
+            log.error("Token has expired for user id: {}", id);
+            throw new ForbiddenException();
+        }
+    }
+
+    private void validateToken(User user, String token, String id) {
+        if(!isTokenPresent(user.getToken()) || !isTokenEqual(user.getToken(), token)) {
+            log.error("Token is invalid for user id: {}", id);
+            throw new ForbiddenException();
+        }
+    }
+
+    private boolean isTokenPresent(String userToken) {
+        return userToken != null;
+    }
+
+    private boolean isTokenEqual(String userToken, String token) {
+        return userToken.equalsIgnoreCase(token);
+    }
+
+    private void validateUser(Optional<User> optionalUser, String id) {
+        if(!optionalUser.isPresent()) {
+            log.error("User with id: {} not found", id);
+            throw new ForbiddenException();
+        }
     }
 
     private JWTSubject parseToken(String token) throws IOException {
