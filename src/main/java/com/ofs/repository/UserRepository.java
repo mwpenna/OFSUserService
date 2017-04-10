@@ -31,7 +31,9 @@ public class UserRepository extends BaseCouchbaseRepository<User> {
     }
 
     public Optional<User> getUserById(String id) {
+        log.info("Attempting to retreive user with id: {}", id);
         if(id == null) {
+            log.warn("Id cannot be null");
             return Optional.empty();
         }
 

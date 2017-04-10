@@ -6,8 +6,11 @@ import com.ofs.models.JWTSubject;
 import com.ofs.models.TokenResponse;
 import com.ofs.models.User;
 import com.ofs.repository.UserRepository;
+import com.ofs.server.errors.ForbiddenException;
 import com.ofs.server.utils.Dates;
 import com.ofs.utils.GlobalConfigs;
+import com.ofs.utils.StringUtils;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -18,9 +21,12 @@ import org.springframework.stereotype.Component;
 
 import javax.crypto.spec.SecretKeySpec;
 import javax.xml.bind.DatatypeConverter;
+import java.io.IOException;
+import java.net.URI;
 import java.security.Key;
 import java.time.ZonedDateTime;
 import java.util.Date;
+import java.util.Optional;
 
 @Component
 @Slf4j
@@ -45,6 +51,30 @@ public class UserService {
 
         userRepository.updateUser(user);
         return TokenResponse.generateBearerTokenResponse(token);
+    }
+
+    public JWTSubject authenticateToken(String token) throws IOException {
+        JWTSubject jwtSubject = parseToken(token);
+        log.info("Parsed token for User: {}", StringUtils.getIdFromURI(jwtSubject.getUserHref()));
+
+        Optional<User> optionalUser = userRepository.getUserById(StringUtils.getIdFromURI(jwtSubject.getUserHref()));
+
+        if(!optionalUser.isPresent()) {
+            throw new ForbiddenException();
+        }
+
+        return jwtSubject;
+    }
+
+    private JWTSubject parseToken(String token) throws IOException {
+        log.debug("Attempting to parse token");
+        Claims claims = Jwts.parser()
+                .setSigningKey(DatatypeConverter.parseBase64Binary(globalConfigs.getSharedSecret()))
+                .parseClaimsJws(token).getBody();
+
+        JWTSubject jwtSubject = ofsObjectMapper.readValue(claims.getSubject(), JWTSubject.class);
+        log.info("Parsed token for User: {}", StringUtils.getIdFromURI(jwtSubject.getUserHref()));
+        return jwtSubject;
     }
 
     private String generateJWTToken(User user) throws JsonProcessingException {

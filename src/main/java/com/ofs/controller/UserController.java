@@ -2,6 +2,7 @@ package com.ofs.controller;
 
 import com.ofs.models.BasicAuthUser;
 
+import com.ofs.models.JWTSubject;
 import com.ofs.models.User;
 import com.ofs.repository.UserRepository;
 import com.ofs.server.OFSController;
@@ -136,7 +137,11 @@ public class UserController {
     }
 
     @GetMapping(value = "/authenticate")
-    public ResponseEntity authenticateUser() { return ResponseEntity.noContent().build();}
+    public JWTSubject authenticateUser(@RequestHeader HttpHeaders headers) throws IOException {
+        String authString = getValidAuthHeader(headers);
+        String token = getBeaerTokenFromAuthentication(authString);
+        return userService.authenticateToken(token);
+    }
 
     private String encryptPassword(String password) {
         StrongPasswordEncryptor strongPasswordEncryptor = new StrongPasswordEncryptor();
@@ -185,5 +190,15 @@ public class UserController {
         String decodedAuthString = new String(Base64.getDecoder().decode(authentication.getBytes()));
         String [] authArray = decodedAuthString.split(":");
         return BasicAuthUser.basicAuthUserFactory(authArray[0], authArray[1]);
+    }
+
+    private String getBeaerTokenFromAuthentication(String authString) {
+        String[] authentication = authString.split(" ");
+
+        if(!authentication[0].equalsIgnoreCase("Bearer")) {
+            throw new ForbiddenException();
+        }
+
+        return authentication[1];
     }
 }

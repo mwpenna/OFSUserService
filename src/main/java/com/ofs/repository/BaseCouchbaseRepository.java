@@ -58,12 +58,15 @@ public abstract class BaseCouchbaseRepository<T> {
         Objects.requireNonNull(clazz);
         Objects.requireNonNull(bucket);
 
+        log.debug("Attempting to retrieve json document with id: {}", id);
         JsonDocument jsonDocument = queryForObject(id, bucket);
 
         if(jsonDocument == null || jsonDocument.content() == null) {
+            log.info("JsonDocumnent not found with id: {}", id);
             return Optional.empty();
         }
         else {
+            log.info("Attempting to map results for id {} to class {}", id, clazz.getName());
             return mapResultsToObject(jsonDocument.content().toMap(), clazz);
         }
     }
