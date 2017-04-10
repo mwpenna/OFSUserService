@@ -28,7 +28,6 @@ import java.time.Duration;
 import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.Optional;
-import java.util.UUID;
 
 @Component
 @Slf4j
@@ -89,9 +88,9 @@ public class UserService {
     }
 
     private void validateTokenExpDate(ZonedDateTime tokenExpDate, String id) {
-        Duration duration = Duration.between(tokenExpDate ,Dates.now());
+        Duration duration = Duration.between(Dates.now(), tokenExpDate);
         long minutes = duration.toMinutes();
-        if(minutes> 20) {
+        if(minutes> 0) {
             log.error("Token has expired for user id: {}", id);
             throw new ForbiddenException();
         }
