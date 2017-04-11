@@ -90,7 +90,7 @@ public class UserService {
     private void validateTokenExpDate(ZonedDateTime tokenExpDate, String id) {
         Duration duration = Duration.between(Dates.now(), tokenExpDate);
         long minutes = duration.toMinutes();
-        if(minutes> 0) {
+        if(minutes>0) {
             log.error("Token has expired for user id: {}", id);
             throw new ForbiddenException();
         }

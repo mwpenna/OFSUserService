@@ -3,6 +3,7 @@ package com.ofs.integrationHelpers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ofs.repository.CompanyRepository;
 import com.ofs.repository.UserRepository;
+import com.ofs.service.UserService;
 import com.ofs.validators.user.UserCreateValidator;
 import org.junit.Before;
 import org.junit.runner.RunWith;
@@ -43,6 +44,9 @@ public abstract class WebIntegrationTestbootstrap {
     @Autowired
     @Qualifier("ofsObjectMapper")
     public ObjectMapper ofsObjectMapper;
+
+    @Autowired
+    public UserService userService;
 
     @Before
     public void superSetup() {

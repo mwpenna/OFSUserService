@@ -4,9 +4,11 @@ import com.couchbase.client.deps.com.fasterxml.jackson.core.JsonProcessingExcept
 import com.couchbase.client.java.document.JsonDocument;
 import com.couchbase.client.java.document.json.JsonObject;
 import com.couchbase.client.java.error.DocumentDoesNotExistException;
+import com.couchbase.client.java.error.TemporaryFailureException;
 import com.couchbase.client.java.query.ParameterizedN1qlQuery;
 import com.ofs.models.User;
 import com.ofs.server.errors.NotFoundException;
+import com.ofs.server.errors.ServiceUnavailableException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -54,6 +56,10 @@ public class UserRepository extends BaseCouchbaseRepository<User> {
             log.info("No results returned for getUserByUserName with username: {}", username);
             return Optional.empty();
         }
+        catch (TemporaryFailureException e) {
+            log.error("Temporary Failure with couchbase occured" , e);
+            throw new ServiceUnavailableException();
+        }
     }
 
     public Optional<User> getUserByEmailAddress(String emailAddress) throws Exception {
@@ -70,6 +76,10 @@ public class UserRepository extends BaseCouchbaseRepository<User> {
             log.info("No results returned for getUserByEmailAddress with emailaddress: {}", emailAddress);
             return Optional.empty();
         }
+        catch (TemporaryFailureException e) {
+            log.error("Temporary Failure with couchbase occured" , e);
+            throw new ServiceUnavailableException();
+        }
     }
 
     public void updateUser(User user) throws com.fasterxml.jackson.core.JsonProcessingException {
@@ -84,6 +94,10 @@ public class UserRepository extends BaseCouchbaseRepository<User> {
             log.warn("User with id: {} was not found", user.getId());
             throw new NotFoundException();
         }
+        catch (TemporaryFailureException e) {
+            log.error("Temporary Failure with couchbase occured" , e);
+            throw new ServiceUnavailableException();
+        }
     }
 
     public void deleteUserById(String id) {
@@ -97,6 +111,10 @@ public class UserRepository extends BaseCouchbaseRepository<User> {
         catch (DocumentDoesNotExistException e) {
             log.warn("User with id: {} was not found", id);
             throw new NotFoundException();
+        }
+        catch (TemporaryFailureException e) {
+            log.error("Temporary Failure with couchbase occured" , e);
+            throw new ServiceUnavailableException();
         }
     }
 

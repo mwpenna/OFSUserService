@@ -6,6 +6,7 @@ import com.couchbase.client.java.Cluster;
 import com.couchbase.client.java.document.JsonDocument;
 import com.couchbase.client.java.document.json.JsonObject;
 import com.couchbase.client.java.error.DocumentDoesNotExistException;
+import com.couchbase.client.java.error.TemporaryFailureException;
 import com.couchbase.client.java.query.AsyncN1qlQueryRow;
 import com.couchbase.client.java.query.DefaultAsyncN1qlQueryRow;
 import com.couchbase.client.java.query.DefaultN1qlQueryResult;
@@ -15,6 +16,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ofs.models.Company;
 import com.ofs.models.User;
 import com.ofs.server.errors.NotFoundException;
+import com.ofs.server.errors.ServiceUnavailableException;
 import com.ofs.server.utils.Dates;
 import org.junit.Before;
 import org.junit.Test;
@@ -86,6 +88,12 @@ public class UserRepositoryTest {
         verify(couchbaseFactory.getUserBucket(), times(1)).insert(any());
     }
 
+    @Test(expected = ServiceUnavailableException.class)
+    public void getUserByUserName_shouldThrowServiceUnavailableExceptionWhenCouchbaseThrowsTempFailureException() throws Exception {
+        when(bucket.query(any(ParameterizedN1qlQuery.class))).thenThrow(new TemporaryFailureException());
+        objectUnderTest.getUserByUserName(user.getUserName());
+    }
+
     @Test
     public void getUserByUserNameNullUserName_shouldReturnEmptyOptional() throws Exception {
         Optional<User> userOptional = objectUnderTest.getUserByUserName(null);
@@ -107,6 +115,12 @@ public class UserRepositoryTest {
         when(bucket.query(any(ParameterizedN1qlQuery.class))).thenReturn(generateSuccessResult());
         Optional<User> optional = objectUnderTest.getUserByUserName(user.getUserName());
         assertTrue(optional.isPresent());
+    }
+
+    @Test(expected = ServiceUnavailableException.class)
+    public void getUserByEmail_shouldThrowServiceUnavailableExceptionWhenCouchbaseThrowsTempFailureException() throws Exception {
+        when(bucket.query(any(ParameterizedN1qlQuery.class))).thenThrow(new TemporaryFailureException());
+        objectUnderTest.getUserByEmailAddress("123");
     }
 
     @Test
@@ -160,6 +174,16 @@ public class UserRepositoryTest {
     public void deleteUserById_shouldThrowNotFoundExcpetionWhenDocumentDoesNotExists() {
         when(bucket.remove(anyString())).thenThrow(new DocumentDoesNotExistException());
         objectUnderTest.deleteUserById("123");
+    }
+
+    @Test(expected = ServiceUnavailableException.class)
+    public void deleteUserById_shouldThrowServiceUnavailableExceptionWhenCouchbaseThrowsTempFailureException() {
+        when(bucket.remove(anyString())).thenThrow(new TemporaryFailureException());
+        objectUnderTest.deleteUserById("123");
+    }
+
+    private JsonDocument generateJsonDocument() {
+        return JsonDocument.create("123", generateUserJsonObject());
     }
 
     private JsonObject generateUserJsonObject() {
