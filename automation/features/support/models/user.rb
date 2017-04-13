@@ -1,7 +1,7 @@
 class User
 
   attr_accessor :id, :firstName, :lastName, :role, :userName, :password,
-                :emailAddress, :token, :tokenExpDate, :activeFlag, :company_href, :company_name
+                :emailAddress, :token, :tokenExpDate, :activeFlag, :company_href, :company_name, :userHref
 
   def href
     "#{self.base_uri}/user/id/#{id}"
@@ -17,25 +17,26 @@ class User
 
   def to_json
     {
-      id: self.id,
-      firstName: self.firstName,
-      lastName: self.lastName,
-      company: {
+        id: self.id,
+        firstName: self.firstName,
+        lastName: self.lastName,
+        company: {
           href: self.company_href,
           name: self.company_name
       },
-      role: self.role,
-      userName: self.userName,
-      password: self.password,
-      emailAddress: self.emailAddress,
-      token: self.token,
-      tokenExpDate: self.tokenExpDate,
-      activeFlag: self.activeFlag
+        role: self.role,
+        userName: self.userName,
+        password: self.password,
+        emailAddress: self.emailAddress,
+        token: self.token,
+        tokenExpDate: self.tokenExpDate,
+        activeFlag: self.activeFlag
     }.to_json
   end
 
   def to_hash
     {
+        href: self.userHref,
         id: self.id,
         firstName: self.firstName,
         lastName: self.lastName,

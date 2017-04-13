@@ -64,10 +64,10 @@ public class UserService {
             log.error("Exception while parsing token: {}. Exception: ", token, jwtException);
             throw new ForbiddenException();
         }
-        log.info("Parsed token for User: {}", StringUtils.getIdFromURI(jwtSubject.getUserHref()));
+        log.info("Parsed token for User: {}", StringUtils.getIdFromURI(jwtSubject.getHref()));
 
-        Optional<User> optionalUser = userRepository.getUserById(StringUtils.getIdFromURI(jwtSubject.getUserHref()));
-        User user = authenticateUser(optionalUser, token, StringUtils.getIdFromURI(jwtSubject.getUserHref()));
+        Optional<User> optionalUser = userRepository.getUserById(StringUtils.getIdFromURI(jwtSubject.getHref()));
+        User user = authenticateUser(optionalUser, token, StringUtils.getIdFromURI(jwtSubject.getHref()));
 
         log.debug("Attempting to update user with id: {}", user.getId());
         user.setTokenExpDate(Dates.now().plusMinutes(20));
@@ -90,7 +90,7 @@ public class UserService {
     private void validateTokenExpDate(ZonedDateTime tokenExpDate, String id) {
         Duration duration = Duration.between(Dates.now(), tokenExpDate);
         long minutes = duration.toMinutes();
-        if(minutes>0) {
+        if(minutes<=0) {
             log.error("Token has expired for user id: {}", id);
             throw new ForbiddenException();
         }
@@ -125,7 +125,7 @@ public class UserService {
                 .parseClaimsJws(token).getBody();
 
         JWTSubject jwtSubject = ofsObjectMapper.readValue(claims.getSubject(), JWTSubject.class);
-        log.info("Parsed token for User: {}", StringUtils.getIdFromURI(jwtSubject.getUserHref()));
+        log.info("Parsed token for User: {}", StringUtils.getIdFromURI(jwtSubject.getHref()));
         return jwtSubject;
     }
 

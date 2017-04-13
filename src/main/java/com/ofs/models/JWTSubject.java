@@ -6,13 +6,13 @@ import java.net.URI;
 
 @Data
 public class JWTSubject {
-    URI userHref;
+    URI href;
     URI companyHref;
     String firstName;
     String lastName;
     User.Role role;
     String userName;
-    String userEmailAddress;
+    String emailAddress;
 
     public static JWTSubject fromUser(User user) {
         JWTSubject jwtSubject = new JWTSubject();
@@ -22,8 +22,8 @@ public class JWTSubject {
         jwtSubject.setFirstName(user.getFirstName());
         jwtSubject.setLastName(user.getLastName());
         jwtSubject.setRole(user.getRole());
-        jwtSubject.setUserEmailAddress(user.getEmailAddress());
-        jwtSubject.setUserHref(user.getHref());
+        jwtSubject.setEmailAddress(user.getEmailAddress());
+        jwtSubject.setHref(user.getHref());
 
         return jwtSubject;
     }

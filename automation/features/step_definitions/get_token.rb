@@ -45,6 +45,7 @@ Given(/^A company and user exists with token$/) do
   basic_auth = Base64.encode64( @user.userName + ":" + @user.password)
   @service_client.get_by_url_with_auth(@service_client.get_base_uri.to_s+"/users/getToken", "Basic "+ basic_auth)
   result = @service_client.get_by_url(@location)
+  @user.userHref = @location
   @user.token=result['token']
   @user.tokenExpDate=result['tokenExpDate']
 end
