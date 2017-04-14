@@ -87,9 +87,9 @@ public class UserController {
     }
 
     @GetMapping(value= "/id/{id}")
-    public User getUserById(@PathVariable("id") String id) {
+    public User getUserById(@PathVariable("id") String id, @RequestHeader("Authorization") String authToken) {
         try{
-            JWTSubject subject = userServiceClient.authenticate();
+            JWTSubject subject = userServiceClient.authenticate(authToken);
         }
         catch (FeignException ex) {
             if(ex.status() == 403) {

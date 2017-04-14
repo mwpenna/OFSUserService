@@ -6,6 +6,7 @@ import com.ofs.models.JWTSubject;
 import com.ofs.models.TokenResponse;
 import com.ofs.models.User;
 import com.ofs.repository.UserRepository;
+import com.ofs.server.OFSController;
 import com.ofs.server.errors.ForbiddenException;
 import com.ofs.server.utils.Dates;
 import com.ofs.utils.GlobalConfigs;
@@ -31,6 +32,7 @@ import java.util.Optional;
 
 @Component
 @Slf4j
+@OFSController
 public class UserService {
 
     @Autowired
