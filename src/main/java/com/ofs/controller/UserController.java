@@ -1,5 +1,6 @@
 package com.ofs.controller;
 
+import com.ofs.client.UserServiceClient;
 import com.ofs.models.BasicAuthUser;
 
 import com.ofs.models.JWTSubject;
@@ -9,6 +10,7 @@ import com.ofs.server.OFSController;
 import com.ofs.server.OFSServerId;
 import com.ofs.server.errors.ForbiddenException;
 import com.ofs.server.errors.NotFoundException;
+import com.ofs.server.errors.UnauthorizedException;
 import com.ofs.server.form.OFSServerForm;
 import com.ofs.server.form.ValidationSchema;
 import com.ofs.server.form.update.ChangeSet;
@@ -18,12 +20,14 @@ import com.ofs.utils.GlobalConfigs;
 import com.ofs.validators.user.UserGetTokenValidator;
 import com.ofs.validators.user.UserCreateValidator;
 
+import feign.FeignException;
 import lombok.extern.slf4j.Slf4j;
 
 import org.jasypt.util.password.StrongPasswordEncryptor;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.cloud.netflix.feign.EnableFeignClients;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -65,6 +69,9 @@ public class UserController {
     @Autowired
     UserService userService;
 
+    @Autowired
+    UserServiceClient userServiceClient;
+
     @ValidationSchema(value = "/user-create.json")
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity create(@OFSServerId URI id, OFSServerForm<User> form) throws Exception{
@@ -81,6 +88,19 @@ public class UserController {
 
     @GetMapping(value= "/id/{id}")
     public User getUserById(@PathVariable("id") String id) {
+        try{
+            JWTSubject subject = userServiceClient.authenticate();
+        }
+        catch (FeignException ex) {
+            if(ex.status() == 403) {
+                log.error("User unathorized to get user with id: {}", id, ex);
+                throw new ForbiddenException();
+            }
+
+            log.error("Unexspected error occured when trying to authenticate user for user id: {}", id, ex);
+            throw ex;
+        }
+
         log.debug("Fetching User with id {}", id);
         Optional<User> optionalUser = userRepository.getUserById(id);
 
