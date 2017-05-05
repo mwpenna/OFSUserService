@@ -1,7 +1,7 @@
 class User
 
   attr_accessor :id, :firstName, :lastName, :role, :userName, :password,
-                :emailAddress, :token, :tokenExpDate, :activeFlag, :company_href, :company_name, :userHref
+                :emailAddress, :token, :tokenExpDate, :activeFlag, :company_href, :company_name, :userHref,
 
   def href
     "#{self.base_uri}/user/id/#{id}"
