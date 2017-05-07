@@ -1,6 +1,5 @@
 package com.ofs.controller;
 
-import com.ofs.client.UserServiceClient;
 import com.ofs.models.BasicAuthUser;
 
 import com.ofs.models.JWTSubject;
@@ -67,11 +66,9 @@ public class UserController {
     @Autowired
     UserService userService;
 
-    @Autowired
-    UserServiceClient userServiceClient;
-
     @ValidationSchema(value = "/user-create.json")
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @Authenticate
     public ResponseEntity create(@OFSServerId URI id, OFSServerForm<User> form) throws Exception{
         User user = form.create(id);
         defaultUserValues(user);
@@ -102,6 +99,7 @@ public class UserController {
 
     @ValidationSchema(value = "/user-update.json")
     @PostMapping(value = "/id/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @Authenticate
     public ResponseEntity update(@PathVariable String id, OFSServerForm<User> form) throws IOException {
         Optional<User> userOptional = userRepository.getUserById(id);
 
@@ -125,6 +123,7 @@ public class UserController {
     }
 
     @DeleteMapping(value = "/id/{id}")
+    @Authenticate
     public ResponseEntity delete(@PathVariable("id") String id) {
         userRepository.deleteUserById(id);
         return ResponseEntity.noContent().build();

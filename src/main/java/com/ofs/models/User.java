@@ -15,6 +15,7 @@ import java.util.UUID;
 public class User extends BaseOFSEntity {
 
     public enum Role {
+        SYSTEM_ADMIN,
         ADMIN,
         ACCOUNT_MANAGER,
         WAREHOUSE,
