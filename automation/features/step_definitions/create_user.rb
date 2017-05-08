@@ -58,7 +58,21 @@ When(/^A request to create a user is received$/) do
   name = Faker::Pokemon.name + (SecureRandom.random_number(999) + 1000).to_s
   email = name + "@pokemon.com"
   @user = FactoryGirl.build(:user, userName: name, emailAddress: email, company_href: @company.href, company_name: @company.name)
-  @result = @service_client.post_to_url("/users", @user.create_to_json)
+  @result = @service_client.post_to_url_with_auth("/users", @user.create_to_json, "Bearer "+ @authToken)
+end
+
+When(/^A request to create a user is received for a diffrent company$/) do
+  basic_auth = Base64.encode64( "ofssystemadmin:p@$$Wordofs")
+  authToken = @service_client.get_by_url_with_auth(@service_client.get_base_uri.to_s+"/users/getToken", "Basic "+ basic_auth)['token']
+  company = FactoryGirl.build(:company, name: Faker::Company.name + (SecureRandom.random_number(999) + 1000).to_s)
+  result = @service_client.post_to_url_with_auth("/company", company.create_to_json, "Bearer "+ authToken)
+  href = result.headers['location']
+  company2 = FactoryGirl.build(:company, name: company.name, href: href, id: href.split("/id/").last)
+
+  name = Faker::Pokemon.name + (SecureRandom.random_number(999) + 1000).to_s
+  email = name + "@pokemon.com"
+  @user = FactoryGirl.build(:user, userName: name, emailAddress: email, company_href: company2.href, company_name: company2.name)
+  @result = @service_client.post_to_url_with_auth("/users", @user.create_to_json, "Bearer "+ @authToken)
 end
 
 And(/^I should see the user was created$/) do
@@ -100,4 +114,20 @@ end
 
 And(/^I should see an error message with duplicate emailAddress$/) do
   expect(@result["errors"][0]).to eql Errors.emailaddress_exists
+end
+
+Given(/^A (.*?) user exists for a company$/) do |property|
+  basic_auth = Base64.encode64( "ofssystemadmin:p@$$Wordofs")
+  authToken = @service_client.get_by_url_with_auth(@service_client.get_base_uri.to_s+"/users/getToken", "Basic "+ basic_auth)['token']
+  company = FactoryGirl.build(:company, name: Faker::Company.name + (SecureRandom.random_number(999) + 1000).to_s)
+  result = @service_client.post_to_url_with_auth("/company", company.create_to_json, "Bearer "+ authToken)
+  href = result.headers['location']
+  @company = FactoryGirl.build(:company, name: company.name, href: href, id: href.split("/id/").last)
+  name = Faker::Pokemon.name + (SecureRandom.random_number(999) + 1000).to_s
+  email = name + "@pokemon.com"
+  @user = FactoryGirl.build(:user, userName: name, emailAddress: email, company_href: @company.href, company_name: @company.name, role: property)
+  @result = @service_client.post_to_url_with_auth("/users", @user.create_to_json, "Bearer "+ authToken)
+  @location = @result.headers['location']
+  basic_auth = Base64.encode64( @user.userName + ":" + @user.password)
+  @authToken = @service_client.get_by_url_with_auth(@service_client.get_base_uri.to_s+"/users/getToken", "Basic "+ basic_auth)['token']
 end

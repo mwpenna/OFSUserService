@@ -50,6 +50,7 @@
     "role": {
       "type": "string",
       "enum": [
+        "SYSTEM_ADMIN",
         "ADMIN",
         "ACCOUNT_MANAGER",
         "WAREHOUSE",

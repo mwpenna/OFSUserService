@@ -7,19 +7,21 @@ import com.ofs.server.security.SecurityContext;
 import com.ofs.server.security.Subject;
 import com.ofs.utils.StringUtils;
 import com.ofs.validations.UserCreateValidation;
+import org.springframework.stereotype.Component;
 
+@Component
 public class ValidateCreatePermissions implements UserCreateValidation {
 
     @Override
     public void validate(User user, OFSErrors errors) throws Exception {
         Subject subject = SecurityContext.getSubject();
 
-        if(subject.getRole().equals(User.Role.ADMIN)) {
+        if(subject.getRole().equals(User.Role.ADMIN.toString())) {
             if(!StringUtils.getIdFromURI(subject.getCompanyHref()).equals(user.getCompany().getIdFromHref())) {
                 throw new UnauthorizedException("OAuth", "OFSServer");
             }
         }
-        else if(!subject.getRole().equals(User.Role.SYSTEM_ADMIN)) {
+        else if(!subject.getRole().equals(User.Role.SYSTEM_ADMIN.toString())) {
             throw new UnauthorizedException("OAuth", "OFSServer");
         }
     }

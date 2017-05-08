@@ -42,8 +42,6 @@ Given(/^A company and user exists with token$/) do
   @user = FactoryGirl.build(:user, userName: name, emailAddress: email, company_href: @company.href, company_name: @company.name)
   @result = @service_client.post_to_url("/users", @user.create_to_json)
   @location = @result.headers['location']
-  basic_auth = Base64.encode64( @user.userName + ":" + @user.password)
-  @service_client.get_by_url_with_auth(@service_client.get_base_uri.to_s+"/users/getToken", "Basic "+ basic_auth)
   result = @service_client.get_by_url(@location)
   @user.userHref = @location
   @user.token=result['token']

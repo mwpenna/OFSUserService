@@ -91,30 +91,34 @@ Feature: User is created when user endpoint is called
     And I should see the location header populated
 
   Scenario: A request to create a user is received by a SYSTEM_ADMIN user
-    Given A SYSTEM_ADMIN user exists
+    Given A SYSTEM_ADMIN user exists for a company
     When A request to create a user is received
     Then the response should have a status of 201
     And I should see the location header populated
 
   Scenario: A request to create a user is received by an ADMIN user
-    Given An ADMIN users exists for a company
+    Given A ADMIN user exists for a company
     When A request to create a user is received
     Then the response should have a status of 201
     And I should see the location header populated
 
   Scenario: A request to create a user is received by an ACCOUNT_MANAGER user
-    Given An ACCOUNT_MANAGER users exists for a company
+    Given A ACCOUNT_MANAGER user exists for a company
     When A request to create a user is received
-    Then the response should have a status of 401
+    Then the response should have a status of 400
 
   Scenario: A request to create a user is received by an WAREHOUSE user
-    Given An WAREHOUSE users exists for a company
+    Given A WAREHOUSE user exists for a company
     When A request to create a user is received
-    Then the response should have a status of 401
+    Then the response should have a status of 400
 
   Scenario: A request to create a user is received by an CUSTOMER user
-    Given An CUSTOMER users exists for a company
+    Given A CUSTOMER user exists for a company
     When A request to create a user is received
-    Then the response should have a status of 401
+    Then the response should have a status of 400
 
+  Scenario: A request to create a user is received by an ADMIN user for a diffrent company
+    Given A ADMIN user exists for a company
+    When A request to create a user is received for a diffrent company
+    Then the response should have a status of 400
 

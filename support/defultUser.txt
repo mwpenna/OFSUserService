@@ -1,0 +1,22 @@
+Company (77cd5002-e7c0-4d06-9e40-e8acb36a4b88):
+{
+  "name": "ofs",
+  "href": "http://localhost:8082/company/id/77cd5002-e7c0-4d06-9e40-e8acb36a4b88",
+  "id": "77cd5002-e7c0-4d06-9e40-e8acb36a4b88"
+}
+User(98fc832b-1f0c-4f7e-865b-6e588a83ee6c):
+{
+  "firstName": "ofssystemadmin",
+  "lastName": "ofssystemadmin",
+  "password": "A7aSv9bMe3rKSzVzkM6aE1ruPVCDLhvuSy+Ux48wW//EkGXFF5OlFhaAaUHXViMD",
+  "emailAddress": "penna.matt@yahoo.com",
+  "role": "SYSTEM_ADMIN",
+  "company": {
+    "name": "ofs",
+    "href": "http://localhost:8082/company/id/77cd5002-e7c0-4d06-9e40-e8acb36a4b88"
+  },
+  "href": "http://localhost:8082/users/id/98fc832b-1f0c-4f7e-865b-6e588a83ee6c",
+  "id": "98fc832b-1f0c-4f7e-865b-6e588a83ee6c",
+  "userName": "ofssystemadmin",
+  "activeFlag": true
+}

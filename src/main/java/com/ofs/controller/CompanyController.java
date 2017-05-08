@@ -7,6 +7,7 @@ import com.ofs.server.OFSServerId;
 import com.ofs.server.form.OFSServerForm;
 import com.ofs.server.form.ValidationSchema;
 import com.ofs.server.model.OFSErrors;
+import com.ofs.server.security.Authenticate;
 import com.ofs.validators.company.CompanyCreateValidator;
 
 import lombok.extern.slf4j.Slf4j;
@@ -33,6 +34,7 @@ public class CompanyController {
 
     @ValidationSchema(value = "/company-create.json")
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @Authenticate
     public ResponseEntity create(@OFSServerId URI id, OFSServerForm<Company> form) throws Exception {
         Company company = form.create(id);
         defaultValues(company);
