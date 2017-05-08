@@ -22,5 +22,6 @@ Feature: Company is created when company endpoint is called
     And I should see the location header populated
 
   Scenario: Validate user with role that is not SYSTEM_ADMIN cannot create company
+    Given A ADMIN user exists for a company
     When A request to create a company is received from user with invalid role
     Then the response should have a status of 400

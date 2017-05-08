@@ -34,3 +34,8 @@ When(/^A request to create a company is received$/) do
   @result = @service_client.post_to_url_with_auth("/company", @company.create_to_json, "Bearer "+ authToken)
 end
 
+When(/^A request to create a company is received from user with invalid role$/) do
+  @company = FactoryGirl.build(:company, name: Faker::Company.name + (SecureRandom.random_number(999) + 1000).to_s)
+  @result = @service_client.post_to_url_with_auth("/company", @company.create_to_json, "Bearer "+ @authToken)
+end
+
