@@ -23,7 +23,7 @@ When(/^A request to create a user is received with missing (.*?)$/) do |field|
   @user = FactoryGirl.build(:user, company_href: @company.href, company_name: @company.name)
   body = @user.create_to_hash
   body.delete(field.to_sym)
-  @result = @service_client.post_to_url("/users", body.to_json)
+  @result = @service_client.post_to_url_with_auth("/users", body.to_json, "Bearer "+ @authToken)
 end
 
 Then(/^the response should have a status of (\d+)$/) do |response_code|
@@ -38,7 +38,7 @@ When(/^A create user request is received with (.*?)$/) do |field|
   @user = FactoryGirl.build(:user, company_href: @company.href, company_name: @company.name)
   body = @user.create_to_hash
   body[field]="test"
-  @result = @service_client.post_to_url("/users", body.to_json)
+  @result = @service_client.post_to_url_with_auth("/users", body.to_json, "Bearer "+ @authToken)
 end
 
 And(/^I should see an error message with (.*?) not allowed/) do |property|
@@ -46,8 +46,10 @@ And(/^I should see an error message with (.*?) not allowed/) do |property|
 end
 
 When(/^A request to create a user is received with an invalid company$/) do
+  basic_auth = Base64.encode64( "ofssystemadmin:p@$$Wordofs")
+  authToken = @service_client.get_by_url_with_auth(@service_client.get_base_uri.to_s+"/users/getToken", "Basic "+ basic_auth)['token']
   @user = FactoryGirl.build(:user, company_href: @service_client.get_base_uri + "/company/id/123")
-  @result = @service_client.post_to_url("/users", @user.create_to_json)
+  @result = @service_client.post_to_url_with_auth("/users", @user.create_to_json, "Bearer "+ authToken)
 end
 
 And(/^I should see an error message with company does not exists$/) do
@@ -78,7 +80,7 @@ end
 And(/^I should see the user was created$/) do
   location = @result.headers['location']
   expect(location).to_not be_nil
-  response = @service_client.get_by_url(location);
+  response = @service_client.get_by_url_with_auth(location, "Bearer "+ @authToken);
 
   expect(response["id"]).to eql location.split("/id/").last
   expect(response["firstName"]).to eql @user.to_hash[:firstName]
@@ -99,7 +101,7 @@ end
 When(/^A request to create a user is received with a duplicate username$/) do
   email = @user.to_hash[:userName] + (SecureRandom.random_number(999) + 1000).to_s + "@pokemon.com"
   duplicateUserName = FactoryGirl.build(:user, userName: @user.to_hash[:userName], emailAddress: email, company_href: @company.href, company_name: @company.name)
-  @result = @service_client.post_to_url("/users", duplicateUserName.create_to_json)
+  @result = @service_client.post_to_url_with_auth("/users", duplicateUserName.create_to_json, "Bearer "+ @authToken)
 end
 
 And(/^I should see an error message with duplicate username$/) do
@@ -109,7 +111,7 @@ end
 When(/^A request to create a user is received with a duplicate emailAddress$/) do
   userName = @user.to_hash[:userName] + (SecureRandom.random_number(999) + 1000).to_s
   duplicateEmailAddress = FactoryGirl.build(:user, userName: userName, emailAddress: @user.to_hash[:emailAddress], company_href: @company.href, company_name: @company.name)
-  @result = @service_client.post_to_url("/users", duplicateEmailAddress.create_to_json)
+  @result = @service_client.post_to_url_with_auth("/users", duplicateEmailAddress.create_to_json, "Bearer "+ @authToken)
 end
 
 And(/^I should see an error message with duplicate emailAddress$/) do
