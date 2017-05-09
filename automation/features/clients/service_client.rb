@@ -25,4 +25,8 @@ class ServiceClient
     def delete_by_url(url)
       return HTTParty.delete(url);
     end
+
+    def delete_by_url_with_auth(url, authHeader)
+      return HTTParty.delete(url, :headers => { 'Authorization' => authHeader });
+    end
   end
