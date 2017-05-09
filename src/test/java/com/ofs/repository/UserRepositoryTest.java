@@ -45,7 +45,7 @@ public class UserRepositoryTest {
     UserRepository objectUnderTest;
 
     @Mock
-    CouchbaseFactory couchbaseFactory;
+    ConnectionManager connectionManager;
 
     @Mock
     Cluster cluster;
@@ -78,14 +78,14 @@ public class UserRepositoryTest {
 
         query = ParameterizedN1qlQuery.parameterized("", JsonObject.create());
         rows = new ArrayList<>();
-        when(couchbaseFactory.getUserBucket()).thenReturn(bucket);
+        when(connectionManager.getUserBucket()).thenReturn(bucket);
         when(ofsObjectMapper.writeValueAsString(anyString())).thenReturn(objectMapper.writeValueAsString(user));
     }
 
     @Test
     public void addUser_happyPath() throws com.couchbase.client.deps.com.fasterxml.jackson.core.JsonProcessingException, JsonProcessingException {
         objectUnderTest.addUser(user);
-        verify(couchbaseFactory.getUserBucket(), times(1)).insert(any());
+        verify(connectionManager.getUserBucket(), times(1)).insert(any());
     }
 
     @Test(expected = ServiceUnavailableException.class)

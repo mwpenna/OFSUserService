@@ -1,7 +1,7 @@
 package com.ofs;
 
 import com.ofs.repository.CompanyRepository;
-import com.ofs.repository.CouchbaseFactory;
+import com.ofs.repository.ConnectionManager;
 import com.ofs.repository.UserRepository;
 import com.ofs.service.UserService;
 import com.ofs.validators.user.UserCreateValidator;
@@ -17,8 +17,8 @@ public class TestSpringConfiguration {
 
     @Bean
     @Primary
-    public CouchbaseFactory couchbaseFactory() {
-        return mock(CouchbaseFactory.class);
+    public ConnectionManager connectionManager() {
+        return mock(ConnectionManager.class);
     }
 
     @Bean

@@ -3,8 +3,8 @@ package com.ofs.repository;
 import com.couchbase.client.java.CouchbaseCluster;
 import com.couchbase.client.java.env.CouchbaseEnvironment;
 import com.couchbase.client.java.env.DefaultCouchbaseEnvironment;
+import com.ofs.utils.GlobalConfigs;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 import com.couchbase.client.java.Bucket;
 import com.couchbase.client.java.Cluster;
@@ -15,36 +15,42 @@ import java.util.concurrent.TimeUnit;
 public class ConnectionManager {
 
     @Autowired
-    ApplicationContext applicationContext;
+    GlobalConfigs globalConfigs;
 
-    private static final String COMPANY_BUCKET = "company";
-    private static final String USER_BUCKET = "users";
+    private final String COMPANY_BUCKET = "company";
+    private final String USER_BUCKET = "users";
 
-    private static final ConnectionManager connectionManager = new ConnectionManager();
-
-    public static ConnectionManager getInstance() {
-        return connectionManager;
-    }
-
-    static CouchbaseEnvironment env = DefaultCouchbaseEnvironment.builder()
+    private CouchbaseEnvironment env = DefaultCouchbaseEnvironment.builder()
             .connectTimeout(TimeUnit.SECONDS.toMillis(10))
             .ioPoolSize(20)
             .build();
 
-    static Cluster cluster = CouchbaseCluster.create(env, "10.226.190.77:8091");
-    static Bucket companyBucket = cluster.openBucket(COMPANY_BUCKET, "");
-    static Bucket userBucket = cluster.openBucket(USER_BUCKET, "");
+    private Cluster cluster;
+    private Bucket companyBucket;
+    private Bucket userBucket;
 
-    public static void disconnect() {
+    public void disconnect() {
         cluster.disconnect();
     }
 
-    public static Bucket getCompanyBucket() {
+    private Cluster getCluster() {
+        if(cluster == null) {
+            cluster = CouchbaseCluster.create(env, globalConfigs.getClusterHostName());
+        }
+        return cluster;
+    }
+
+    public Bucket getCompanyBucket() {
+        if(companyBucket == null) {
+            companyBucket = getCluster().openBucket(COMPANY_BUCKET, globalConfigs.getClusterPassword());
+        }
         return companyBucket;
     }
 
-    public static Bucket getUserBucket() {
+    public Bucket getUserBucket() {
+        if(userBucket == null) {
+            userBucket = getCluster().openBucket(USER_BUCKET, globalConfigs.getClusterPassword());
+        }
         return userBucket;
     }
-
 }

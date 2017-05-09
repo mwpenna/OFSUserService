@@ -33,7 +33,7 @@ public class CompanyRepositoryTest {
     CompanyRepository objectUnderTest;
 
     @Mock
-    CouchbaseFactory couchbaseFactory;
+    ConnectionManager connectionManager;
 
     @Mock
     Cluster cluster;
@@ -58,7 +58,7 @@ public class CompanyRepositoryTest {
 
         query = ParameterizedN1qlQuery.parameterized("", JsonObject.create());
         rows = new ArrayList<>();
-        when(couchbaseFactory.getCompanyBucket()).thenReturn(bucket);
+        when(connectionManager.getCompanyBucket()).thenReturn(bucket);
 
         id = UUID.randomUUID();
 

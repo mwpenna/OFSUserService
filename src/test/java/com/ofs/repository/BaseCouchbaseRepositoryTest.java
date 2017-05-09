@@ -43,7 +43,7 @@ import static org.mockito.MockitoAnnotations.initMocks;
 public class BaseCouchbaseRepositoryTest {
 
     @Mock
-    CouchbaseFactory couchbaseFactory;
+    ConnectionManager connectionManager;
 
     @InjectMocks
     private UserRepository objectUnderTest;
@@ -74,7 +74,7 @@ public class BaseCouchbaseRepositoryTest {
 
         query = ParameterizedN1qlQuery.parameterized("", JsonObject.create());
         rows = new ArrayList<>();
-        when(couchbaseFactory.getUserBucket()).thenReturn(bucket);
+        when(connectionManager.getUserBucket()).thenReturn(bucket);
     }
 
     @Test(expected = NullPointerException.class)
@@ -89,7 +89,7 @@ public class BaseCouchbaseRepositoryTest {
 
     @Test
     public void queryForObjectByParametersWithNoResults_shouldReturnEmptyOptional() throws Exception {
-        when(couchbaseFactory.getUserBucket().query(eq(query))).thenReturn(generateSuccessResult());
+        when(connectionManager.getUserBucket().query(eq(query))).thenReturn(generateSuccessResult());
         Optional<User> optional = objectUnderTest.queryForObjectByParameters(query, bucket, User.class);
         assertFalse(optional.isPresent());
     }
@@ -99,26 +99,26 @@ public class BaseCouchbaseRepositoryTest {
         String userString = objectMapper.writeValueAsString(user);
         DefaultAsyncN1qlQueryRow row = new DefaultAsyncN1qlQueryRow(userString.getBytes());
         rows.add(row);
-        when(couchbaseFactory.getUserBucket().query(eq(query))).thenReturn(generateSuccessResult());
+        when(connectionManager.getUserBucket().query(eq(query))).thenReturn(generateSuccessResult());
         Optional<User> optional = objectUnderTest.queryForObjectByParameters(query, bucket, User.class);
         assertTrue(optional.isPresent());
     }
 
     @Test(expected = ServiceUnavailableException.class)
     public void queryForObjectByParametersBackPressureException_shouldThrowServiceUnavalableException() throws Exception {
-        when(couchbaseFactory.getUserBucket().query(eq(query))).thenThrow(new BackpressureException());
+        when(connectionManager.getUserBucket().query(eq(query))).thenThrow(new BackpressureException());
         objectUnderTest.queryForObjectByParameters(query, bucket, User.class);
     }
 
     @Test(expected = ServiceUnavailableException.class)
     public void queryForObjectByParametersRequestCancelledException_shouldThrowServiceUnavalableException() throws Exception {
-        when(couchbaseFactory.getUserBucket().query(eq(query))).thenThrow(new RequestCancelledException());
+        when(connectionManager.getUserBucket().query(eq(query))).thenThrow(new RequestCancelledException());
         objectUnderTest.queryForObjectByParameters(query, bucket, User.class);
     }
 
     @Test(expected = ServiceUnavailableException.class)
     public void queryForObjectByParametersRuntimeException_shouldThrowServiceUnavalableException() throws Exception {
-        when(couchbaseFactory.getUserBucket().query(eq(query))).thenThrow(new RuntimeException());
+        when(connectionManager.getUserBucket().query(eq(query))).thenThrow(new RuntimeException());
         objectUnderTest.queryForObjectByParameters(query, bucket, User.class);
     }
 

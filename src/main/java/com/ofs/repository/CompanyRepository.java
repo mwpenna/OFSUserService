@@ -20,14 +20,11 @@ import java.util.Optional;
 public class CompanyRepository extends BaseCouchbaseRepository<Company> {
 
     @Autowired
-    CouchbaseFactory couchbaseFactory;
-
-    @Autowired
     ConnectionManager connectionManager;
 
     public void addCompany(Company company) throws JsonProcessingException, com.fasterxml.jackson.core.JsonProcessingException {
 //        add(company.getId().toString(), couchbaseFactory.getCompanyBucket(), company);
-        add(company.getId().toString(), connectionManager.getInstance().getCompanyBucket(), company);
+        add(company.getId().toString(), connectionManager.getCompanyBucket(), company);
     }
 
     public Optional<Company> getCompanyById(String id) throws Exception {
@@ -38,7 +35,7 @@ public class CompanyRepository extends BaseCouchbaseRepository<Company> {
         try {
             ParameterizedN1qlQuery query = ParameterizedN1qlQuery.parameterized(generateGetByIdQuery(), generateGetByIdParameters(id));
 //            return queryForObjectByParameters(query, couchbaseFactory.getCompanyBucket(), Company.class);
-            return queryForObjectByParameters(query, connectionManager.getInstance().getCompanyBucket(), Company.class);
+            return queryForObjectByParameters(query, connectionManager.getCompanyBucket(), Company.class);
         }
         catch (NoSuchElementException e) {
             log.warn("Company id {} does not exists", id, e);
@@ -55,7 +52,7 @@ public class CompanyRepository extends BaseCouchbaseRepository<Company> {
             ParameterizedN1qlQuery query = ParameterizedN1qlQuery.parameterized(
                     generateGetByNameQuery(), generateGetByNameParameters(name));
 //            return queryForObjectByParameters(query, couchbaseFactory.getCompanyBucket(), Company.class);
-            return queryForObjectByParameters(query, connectionManager.getInstance().getCompanyBucket(), Company.class);
+            return queryForObjectByParameters(query, connectionManager.getCompanyBucket(), Company.class);
         }
         catch (NoSuchElementException e) {
             log.info("No results returned for getCompanyByName with company name: {}", name);
@@ -64,7 +61,7 @@ public class CompanyRepository extends BaseCouchbaseRepository<Company> {
     }
 
     private String generateGetByIdQuery() {
-        return "SELECT `" + connectionManager.getCompanyBucket().name() + "`.* FROM `" + connectionManager.getInstance().getCompanyBucket().name() + "` where id = $id";
+        return "SELECT `" + connectionManager.getCompanyBucket().name() + "`.* FROM `" + connectionManager.getCompanyBucket().name() + "` where id = $id";
     }
 
     private JsonObject generateGetByIdParameters(String id) {
@@ -72,7 +69,7 @@ public class CompanyRepository extends BaseCouchbaseRepository<Company> {
     }
 
     private String generateGetByNameQuery() {
-        return "SELECT `" + connectionManager.getCompanyBucket().name() + "`.* FROM `" + connectionManager.getInstance().getCompanyBucket().name() + "` where name = $name";
+        return "SELECT `" + connectionManager.getCompanyBucket().name() + "`.* FROM `" + connectionManager.getCompanyBucket().name() + "` where name = $name";
     }
 
     private JsonObject generateGetByNameParameters(String name) {
