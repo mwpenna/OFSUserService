@@ -2,7 +2,7 @@
 Feature: User is returned when get user endpoint is called
 
   Scenario: Try to get a valid user
-    Given A company and user exists
+    Given A company and user exists with token
     When A request to get the user is received
     Then the response should have a status of 200
     And I should see the user was returned

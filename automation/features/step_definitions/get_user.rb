@@ -1,5 +1,5 @@
 When(/^A request to get the user is received$/) do
-  @result = @service_client.get_by_url(@result.headers['location'])
+  @result = @service_client.get_by_url_with_auth(@location, "Bearer " + @user.token)
 end
 
 And(/^I should see the user was returned$/) do
@@ -16,5 +16,7 @@ And(/^I should see the user was returned$/) do
 end
 
 When(/^A request to get a user that does not exists$/) do
-  @result = @service_client.get_by_url(@service_client.get_base_uri.to_s+"/user/id/123")
+  basic_auth = Base64.encode64( "ofssystemadmin:p@$$Wordofs")
+  authToken = @service_client.get_by_url_with_auth(@service_client.get_base_uri.to_s+"/users/getToken", "Basic "+ basic_auth)['token']
+  @result = @service_client.get_by_url_with_auth(@service_client.get_base_uri.to_s+"/user/id/123", "Bearer " + authToken)
 end
