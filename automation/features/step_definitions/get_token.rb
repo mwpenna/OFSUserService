@@ -33,16 +33,20 @@ And(/^I should see a token response was returned$/) do
 end
 
 Given(/^A company and user exists with token$/) do
+  basic_auth = Base64.encode64( "ofssystemadmin:p@$$Wordofs")
+  authToken = @service_client.get_by_url_with_auth(@service_client.get_base_uri.to_s+"/users/getToken", "Basic "+ basic_auth)['token']
   company = FactoryGirl.build(:company, name: Faker::Company.name + (SecureRandom.random_number(999) + 1000).to_s)
-  result = @service_client.post_to_url("/company", company.create_to_json)
+  result = @service_client.post_to_url_with_auth("/company", company.create_to_json, "Bearer "+ authToken)
   href = result.headers['location']
   @company = FactoryGirl.build(:company, name: company.name, href: href, id: href.split("/id/").last)
   name = Faker::Pokemon.name + (SecureRandom.random_number(999) + 1000).to_s
   email = name + "@pokemon.com"
   @user = FactoryGirl.build(:user, userName: name, emailAddress: email, company_href: @company.href, company_name: @company.name)
-  @result = @service_client.post_to_url("/users", @user.create_to_json)
+  @result = @service_client.post_to_url_with_auth("/users", @user.create_to_json, "Bearer "+ authToken)
   @location = @result.headers['location']
-  result = @service_client.get_by_url(@location)
+  basic_auth = Base64.encode64( @user.userName+":"+ @user.password)
+  authToken = @service_client.get_by_url_with_auth(@service_client.get_base_uri.to_s+"/users/getToken", "Basic "+ basic_auth)['token']
+  result = @service_client.get_by_url_with_auth(@location, "Bearer "+ authToken)
   @user.userHref = @location
   @user.token=result['token']
   @user.tokenExpDate=result['tokenExpDate']

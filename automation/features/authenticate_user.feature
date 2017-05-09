@@ -30,12 +30,6 @@ Feature: User is authenticated when endpoint is called
     When A request to authenticate the user with wrong JWT token
     Then the response should have a status of 403
 
-  @pending
-  Scenario: Try to authenticate a user that does not have a token stored in db
-    Given A company and user exists
-    When A request to authenticate the user that does not have a token
-    Then the response should have a status of 403
-
   Scenario: Authenticate a user succeeds and userHref is returned
     Given A company and user exists with token
     When A request to authenticate the user

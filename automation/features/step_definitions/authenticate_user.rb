@@ -21,8 +21,7 @@ When(/^A request to authenticate the user with expired JWT token$/) do
   updateUser = FactoryGirl.build(:user,  company_href: @company.href, company_name: @company.name)
   body = updateUser.update_to_hash
   body["tokenExpDate"]=(DateTime.now - (25/1440.0)).strftime "%Y-%m-%dT%H:%M:%SZ"
-  @result = @service_client.post_to_url("/users/id/"+ @location.split("/id/").last, body.to_json)
-
+  @service_client.post_to_url_with_auth("/users/id/"+ @location.split("/id/").last, body.to_json, "Bearer "+token)
   @result = @service_client.get_by_url_with_auth(@service_client.get_base_uri.to_s+"/users/authenticate", "Bearer "+token)
 end
 
@@ -30,7 +29,6 @@ When(/^A request to authenticate the user with wrong JWT token$/) do
   basic_auth = Base64.encode64( @user.userName + ":" + @user.password)
   @service_client.get_by_url_with_auth(@service_client.get_base_uri.to_s+"/users/getToken", "Basic "+ basic_auth)
   @service_client.get_by_url_with_auth(@service_client.get_base_uri.to_s+"/users/getToken", "Basic "+ basic_auth)
-
   @result = @service_client.get_by_url_with_auth(@service_client.get_base_uri.to_s+"/users/authenticate", "Bearer "+@user.token)
 end
 
@@ -64,8 +62,4 @@ end
 
 Then(/^I should see the userName is returned$/) do
   expect(@result["userName"]).to eql @user.to_hash[:userName]
-end
-
-When(/^A request to authenticate the user that does not have a token$/) do
-  pending # Write code here that turns the phrase above into concrete actions
 end

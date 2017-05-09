@@ -41,8 +41,15 @@ public abstract class BaseCouchbaseRepository<T> {
         Objects.requireNonNull(clazz);
         Objects.requireNonNull(bucket);
 
+        N1qlQueryResult queryResult;
 
-        N1qlQueryResult queryResult = queryForObject(query, bucket);
+        try {
+            queryResult = queryForObject(query, bucket);
+        }
+        finally {
+//            bucket.close();
+        }
+
 
         Map resultMap = null;
 
@@ -59,7 +66,14 @@ public abstract class BaseCouchbaseRepository<T> {
         Objects.requireNonNull(bucket);
 
         log.debug("Attempting to retrieve json document with id: {}", id);
-        JsonDocument jsonDocument = queryForObject(id, bucket);
+
+        JsonDocument jsonDocument;
+        try {
+            jsonDocument = queryForObject(id, bucket);
+        }
+        finally {
+//            bucket.close();
+        }
 
         if(jsonDocument == null || jsonDocument.content() == null) {
             log.info("JsonDocumnent not found with id: {}", id);
@@ -78,7 +92,13 @@ public abstract class BaseCouchbaseRepository<T> {
 
         JsonObject jsonObject = JsonObject.fromJson(ofsObjectMapper.writeValueAsString(object));
         JsonDocument jsonDocument = JsonDocument.create(id, jsonObject);
-        bucket.insert(jsonDocument);
+
+        try {
+            bucket.insert(jsonDocument);
+        }
+        finally {
+//            bucket.close();
+        }
     }
 
     public void update(String id, Bucket bucket, Object object) throws JsonProcessingException {
@@ -88,12 +108,26 @@ public abstract class BaseCouchbaseRepository<T> {
 
         JsonDocument userDocument = bucket.getAndLock(id, 5);
         JsonDocument updatedDocument = modifyJsonDocument(id, userDocument, object);
-        bucket.replace(updatedDocument);
+
+        try {
+            bucket.replace(updatedDocument);
+        }
+        finally {
+//            bucket.close();
+        }
     }
 
     public void delete(String id, Bucket bucket) {
         Objects.requireNonNull(id);
+
+        try {
         bucket.remove(id);
+
+        }
+        finally {
+            //            bucket.close();
+
+        }
     }
 
     private JsonDocument modifyJsonDocument(String id, JsonDocument jsonDocument, Object object) throws com.fasterxml.jackson.core.JsonProcessingException {

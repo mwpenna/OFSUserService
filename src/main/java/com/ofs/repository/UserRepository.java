@@ -24,11 +24,15 @@ public class UserRepository extends BaseCouchbaseRepository<User> {
     @Autowired
     CouchbaseFactory couchbaseFactory;
 
+    @Autowired
+    ConnectionManager connectionManager;
+
     public void addUser(User user) throws JsonProcessingException, com.fasterxml.jackson.core.JsonProcessingException {
         Objects.requireNonNull(user);
 
         log.info("Attempting to add user with id: {}", user.getId());
-        add(user.getId().toString(), couchbaseFactory.getUserBucket(), user);
+//        add(user.getId().toString(), couchbaseFactory.getUserBucket(), user);
+        add(user.getId().toString(), connectionManager.getInstance().getUserBucket(), user);
         log.info("User with id: {} has been added", user.getId());
     }
 
@@ -39,7 +43,8 @@ public class UserRepository extends BaseCouchbaseRepository<User> {
             return Optional.empty();
         }
 
-        return queryForObjectById(id, couchbaseFactory.getUserBucket(), User.class);
+//        return queryForObjectById(id, couchbaseFactory.getUserBucket(), User.class);
+        return queryForObjectById(id, connectionManager.getInstance().getUserBucket(), User.class);
     }
 
     public Optional<User> getUserByUserName(String username) throws Exception{
@@ -50,7 +55,8 @@ public class UserRepository extends BaseCouchbaseRepository<User> {
         try {
             ParameterizedN1qlQuery query = ParameterizedN1qlQuery.parameterized(
                 generateGetByUserNameQuery(), generateGetByUserNameParameters(username));
-            return queryForObjectByParameters(query, couchbaseFactory.getUserBucket(), User.class);
+//            return queryForObjectByParameters(query, couchbaseFactory.getUserBucket(), User.class);
+            return queryForObjectByParameters(query, connectionManager.getInstance().getUserBucket(), User.class);
         }
         catch (NoSuchElementException e) {
             log.info("No results returned for getUserByUserName with username: {}", username);
@@ -70,7 +76,8 @@ public class UserRepository extends BaseCouchbaseRepository<User> {
         try {
             ParameterizedN1qlQuery query = ParameterizedN1qlQuery.parameterized(
                     generateGetByEmailAddressQuery(), generateGetByEmailAddressParameters(emailAddress));
-            return queryForObjectByParameters(query, couchbaseFactory.getUserBucket(), User.class);
+//            return queryForObjectByParameters(query, couchbaseFactory.getUserBucket(), User.class);
+            return queryForObjectByParameters(query, connectionManager.getInstance().getUserBucket(), User.class);
         }
         catch (NoSuchElementException e) {
             log.info("No results returned for getUserByEmailAddress with emailaddress: {}", emailAddress);
@@ -87,7 +94,8 @@ public class UserRepository extends BaseCouchbaseRepository<User> {
 
         try {
             log.info("Attempting to update user with id: {}", user.getId());
-            update(user.getId().toString(), couchbaseFactory.getUserBucket(), user);
+//            update(user.getId().toString(), couchbaseFactory.getUserBucket(), user);
+            update(user.getId().toString(), connectionManager.getInstance().getUserBucket(), user);
             log.info("user with id: {} has been updated", user.getId());
         }
         catch(DocumentDoesNotExistException e) {
@@ -105,7 +113,8 @@ public class UserRepository extends BaseCouchbaseRepository<User> {
 
         try{
             log.info("Attempting to delete user with id: {}", id);
-            delete(id, couchbaseFactory.getUserBucket());
+//            delete(id, couchbaseFactory.getUserBucket());
+            delete(id, connectionManager.getInstance().getUserBucket());
             log.info("user with id: {} has been delete", id);
         }
         catch (DocumentDoesNotExistException e) {
@@ -119,7 +128,7 @@ public class UserRepository extends BaseCouchbaseRepository<User> {
     }
 
     private String generateGetByUserNameQuery() {
-        return "SELECT `" + couchbaseFactory.getUserBucket().name() + "`.* FROM `" + couchbaseFactory.getUserBucket().name() + "` where userName = $userName";
+        return "SELECT `" + connectionManager.getInstance().getUserBucket().name() + "`.* FROM `" + connectionManager.getInstance().getUserBucket().name() + "` where userName = $userName";
     }
 
     private JsonObject generateGetByUserNameParameters(String userName) {
@@ -127,7 +136,7 @@ public class UserRepository extends BaseCouchbaseRepository<User> {
     }
 
     private String generateGetByEmailAddressQuery() {
-        return "SELECT `" + couchbaseFactory.getUserBucket().name() + "`.* FROM `" + couchbaseFactory.getUserBucket().name() + "` where emailAddress = $emailAddress";
+        return "SELECT `" + connectionManager.getInstance().getUserBucket().name() + "`.* FROM `" + connectionManager.getInstance().getUserBucket().name() + "` where emailAddress = $emailAddress";
     }
 
     private JsonObject generateGetByEmailAddressParameters(String emailAddress) {
