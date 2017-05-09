@@ -88,3 +88,61 @@ Feature: User is updated when update user endpoint is called
     When A request to update the user emailAddress
     Then the response should have a status of 204
     And I should see the emailAddress was updated
+
+  Scenario: User with role of SYSTEM_ADMIN can update any user
+    Given A company and user exists with token
+    When A request to update the user is received by SYSTEM_ADMIN
+    Then the response should have a status of 204
+    And I should see the user was updated
+
+  Scenario: User with role of ADMIN cannot get user from different company
+    Given A ADMIN user exists for a company
+    And A company and user exists
+    When A request to update the user is received by the ADMIN user for a diffrent company
+    Then the response should have a status of 400
+
+  Scenario: User with role of ADMIN can update users within their company
+    Given A ADMIN user exists for a company
+    And A user exists for the ADMIN company
+    When A request to update the user is received
+    Then the response should have a status of 204
+    And I should see the user was updated
+
+  Scenario: User with role of ADMIN can update their user info
+    Given A ADMIN user exists for a company
+    When A request to update the user is received
+    Then the response should have a status of 204
+    And I should see the user was updated
+
+  Scenario: User with role of ACCOUNT_MANAGER can only update there user info
+    Given A ACCOUNT_MANAGER user exists for a company
+    When A request to update a different user is received
+    Then the response should have a status of 400
+
+  Scenario: User with role of ACCOUNT_MANAGER can update their user info
+    Given A ACCOUNT_MANAGER user exists for a company
+    When A request to update the user is received
+    Then the response should have a status of 204
+    And I should see the user was updated
+
+  Scenario: User with role of CUSTOMER can only update there user info
+    Given A CUSTOMER user exists for a company
+    When A request to update a different user is received
+    Then the response should have a status of 400
+
+  Scenario: User with role of CUSTOMER can update their user info
+    Given A CUSTOMER user exists for a company
+    When A request to update the user is received
+    Then the response should have a status of 204
+    And I should see the user was updated
+
+  Scenario: User with role of WAREHOUSE can only update there user info
+    Given A WAREHOUSE user exists for a company
+    When A request to update a different user is received
+    Then the response should have a status of 400
+
+  Scenario: User with role of WAREHOUSE can update their user info
+    Given A WAREHOUSE user exists for a company
+    When A request to update the user is received
+    Then the response should have a status of 204
+    And I should see the user was updated
