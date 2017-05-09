@@ -16,9 +16,12 @@ import com.ofs.server.model.OFSErrors;
 import com.ofs.server.security.Authenticate;
 import com.ofs.service.UserService;
 import com.ofs.utils.GlobalConfigs;
+import com.ofs.validators.user.UserDeleteValidator;
 import com.ofs.validators.user.UserGetTokenValidator;
 import com.ofs.validators.user.UserCreateValidator;
 
+import com.ofs.validators.user.UserGetValidator;
+import com.ofs.validators.user.UserUpdateValidator;
 import lombok.extern.slf4j.Slf4j;
 
 import org.jasypt.util.password.StrongPasswordEncryptor;
@@ -57,6 +60,15 @@ public class UserController {
     private UserGetTokenValidator getTokenValidator;
 
     @Autowired
+    private UserGetValidator getValidator;
+
+    @Autowired
+    private UserUpdateValidator updateValidator;
+
+    @Autowired
+    private UserDeleteValidator userDeleteValidator;
+
+    @Autowired
     GlobalConfigs globalConfigs;
 
     @Autowired
@@ -83,12 +95,17 @@ public class UserController {
 
     @GetMapping(value= "/id/{id}")
     @Authenticate
-    public User getUserById(@PathVariable("id") String id, @RequestHeader("Authorization") String authToken) {
+    public User getUserById(@PathVariable("id") String id, @RequestHeader("Authorization") String authToken) throws Exception {
         log.debug("Fetching User with id {}", id);
         Optional<User> optionalUser = userRepository.getUserById(id);
 
         if(optionalUser.isPresent()) {
-            log.debug("User found with id {}, id");
+            User user = optionalUser.get();
+            log.debug("User found with id {}", user.getId());
+
+            OFSErrors errors = new OFSErrors();
+            getValidator.validate(user, errors);
+
             return optionalUser.get();
         }
         else {
@@ -100,11 +117,15 @@ public class UserController {
     @ValidationSchema(value = "/user-update.json")
     @PostMapping(value = "/id/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     @Authenticate
-    public ResponseEntity update(@PathVariable String id, OFSServerForm<User> form) throws IOException {
+    public ResponseEntity update(@PathVariable String id, OFSServerForm<User> form) throws Exception {
         Optional<User> userOptional = userRepository.getUserById(id);
 
         if(userOptional.isPresent()) {
             User user = userOptional.get();
+
+            OFSErrors errors = new OFSErrors();
+            updateValidator.validate(user, errors);
+
             ChangeSet changeSet = form.update(user);
 
             if(changeSet.size()>0) {
@@ -124,7 +145,10 @@ public class UserController {
 
     @DeleteMapping(value = "/id/{id}")
     @Authenticate
-    public ResponseEntity delete(@PathVariable("id") String id) {
+    public ResponseEntity delete(@PathVariable("id") String id) throws Exception {
+        OFSErrors errors = new OFSErrors();
+        userDeleteValidator.validate(id, errors);
+
         userRepository.deleteUserById(id);
         return ResponseEntity.noContent().build();
     }
