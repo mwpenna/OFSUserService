@@ -136,3 +136,4 @@ Given(/^A (.*?) user exists for a company$/) do |property|
   basic_auth = Base64.encode64( @user.userName + ":" + @user.password)
   @authToken = @service_client.get_by_url_with_auth(@service_client.get_base_uri.to_s+"/users/getToken", "Basic "+ basic_auth)['token']
 end
+
