@@ -16,3 +16,7 @@ When(/^A request is made to delete a user the does not exists$/) do
   authToken = @service_client.get_by_url_with_auth(@service_client.get_base_uri.to_s+"/users/getToken", "Basic "+ basic_auth)['token']
   @result = @service_client.delete_by_url_with_auth(@service_client.get_base_uri + "/users/id/123", "Bearer " + authToken)
 end
+
+When(/^A request is made to delete the user with a role that is not SYSTEM_ADMIN$/) do
+  @result = @service_client.delete_by_url_with_auth(@location, "Bearer " + @user.token)
+end

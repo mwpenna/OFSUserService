@@ -103,3 +103,37 @@ Then(/^I should see the password has changed$/) do
   @result = @service_client.get_by_url(@location)
   expect(@result["password"]).to_not eql "test"
 end
+
+When(/^A request to update the user emailAddress is received by SYSTEM_ADMIN$/) do
+  basic_auth = Base64.encode64( "ofssystemadmin:p@$$Wordofs")
+  authToken = @service_client.get_by_url_with_auth(@service_client.get_base_uri.to_s+"/users/getToken", "Basic "+ basic_auth)['token']
+  @user = FactoryGirl.build(:user,  company_href: @company.href, company_name: @company.name)
+  body = @user.update_to_hash
+  @updatedValue = "test@test.com"
+  body["emailAddress"]=@updatedValue
+  @result = @service_client.post_to_url_with_auth("/users/id/"+ @location.split("/id/").last, body.to_json, "Bearer " + authToken)
+end
+
+When(/^A request to update the user is received by the ADMIN user for a different company$/) do
+  @user = FactoryGirl.build(:user,  company_href: @company.href, company_name: @company.name)
+  body = @user.update_to_hash
+  @updatedValue = "test@test.com"
+  body["emailAddress"]=@updatedValue
+  @result = @service_client.post_to_url_with_auth("/users/id/"+ @location.split("/id/").last, body.to_json, "Bearer " + @authToken)
+end
+
+When(/^A request to update the users emailAddress is received$/) do
+  @user = FactoryGirl.build(:user,  company_href: @company.href, company_name: @company.name)
+  body = @user.update_to_hash
+  @updatedValue = "test@test.com"
+  body["emailAddress"]=@updatedValue
+  @result = @service_client.post_to_url_with_auth("/users/id/"+ @location.split("/id/").last, body.to_json, "Bearer " + @authToken)
+end
+
+When(/^A request to update a different user is received$/) do
+  @user = FactoryGirl.build(:user,  company_href: @company.href, company_name: @company.name)
+  body = @user.update_to_hash
+  @updatedValue = "test@test.com"
+  body["emailAddress"]=@updatedValue
+  @result = @service_client.post_to_url_with_auth("/users/id/"+ @location.split("/id/").last, body.to_json, "Bearer " + @authToken)
+end
