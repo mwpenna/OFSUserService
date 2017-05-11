@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.ofs.integrationHelpers.WebIntegrationTestbootstrap;
 import com.ofs.models.Company;
 import com.ofs.models.JWTSubject;
+import com.ofs.models.TokenResponse;
 import com.ofs.models.User;
 import lombok.Data;
 import org.junit.Before;
@@ -38,8 +39,9 @@ public class UserControllerTest extends WebIntegrationTestbootstrap {
     }
 
     @Test
-    public void createUser_happyPathSucceeds() throws JsonProcessingException {
-        HttpHeaders headers = createHeaders();
+    public void createUser_happyPathSucceeds() throws Exception {
+        when(authenticationClient.authenticate(any())).thenReturn(generateJWTServerSubject());
+        HttpHeaders headers = createHeaders("123");
         headers.setContentType(MediaType.APPLICATION_JSON);
 
         String request = ofsObjectMapper.writeValueAsString(generateDefaultUser());
@@ -50,9 +52,14 @@ public class UserControllerTest extends WebIntegrationTestbootstrap {
     }
 
     @Test
-    public void getUser_happyPathSuccceeds() throws JsonProcessingException {
+    public void getUser_happyPathSuccceeds() throws Exception {
+        when(authenticationClient.authenticate(any())).thenReturn(generateJWTServerSubject());
         when(userRepository.getUserById(any())).thenReturn(Optional.of(generateResponseUser()));
-        ResponseEntity<String> response = restTemplate.getForEntity(apiUrl("users/id/"+id), String.class);
+
+        HttpHeaders headers = createHeaders("123");
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+
+        ResponseEntity<String> response = restTemplate.exchange(apiUrl("users/id/"+id), HttpMethod.GET,entity, String.class);
         assertEquals(HttpStatus.OK, response.getStatusCode());
     }
 
@@ -68,7 +75,11 @@ public class UserControllerTest extends WebIntegrationTestbootstrap {
 
     @Test
     public void deleteUser_happyPathSucceeds() {
-        HttpEntity<String> entity = new HttpEntity<>(generateBasicAuthHeader());
+        when(authenticationClient.authenticate(any())).thenReturn(generateJWTServerSubject());
+
+        HttpHeaders headers = createHeaders("123");
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+
         ResponseEntity<String> response = restTemplate.exchange(apiUrl("users/id/" + id), HttpMethod.DELETE, entity, String.class);
         assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
     }
@@ -76,7 +87,9 @@ public class UserControllerTest extends WebIntegrationTestbootstrap {
     @Test
     public void updateUser_happyPathSucceeds() throws Exception {
         when(userRepository.getUserById(anyString())).thenReturn(Optional.of(generateResponseUser()));
-        HttpHeaders headers = createHeaders();
+        when(authenticationClient.authenticate(any())).thenReturn(generateJWTServerSubject());
+        
+        HttpHeaders headers = createHeaders("123");
         headers.setContentType(MediaType.APPLICATION_JSON);
 
         String request = ofsObjectMapper.writeValueAsString(generateUpdateUser());
@@ -97,6 +110,20 @@ public class UserControllerTest extends WebIntegrationTestbootstrap {
 
     private JWTSubject generateJWTSubject() {
         return JWTSubject.fromUser(generateResponseUser());
+    }
+
+    private com.ofs.server.model.JWTSubject generateJWTServerSubject() {
+        com.ofs.server.model.JWTSubject subject = new com.ofs.server.model.JWTSubject();
+
+        subject.setHref(URI.create(apiUrl("/users/id/"+id)));
+        subject.setFirstName("name");
+        subject.setLastName("lName");
+        subject.setRole(com.ofs.server.model.JWTSubject.Role.SYSTEM_ADMIN);
+        subject.setUserName("name.lName");
+        subject.setEmailAddress("name.lName@place.com");
+        subject.setCompanyHref(generateDefaultCompany().getHref());
+
+        return subject;
     }
 
     private User generateResponseUser() {

@@ -3,6 +3,7 @@ package com.ofs.integrationHelpers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ofs.repository.CompanyRepository;
 import com.ofs.repository.UserRepository;
+import com.ofs.server.client.AuthenticationClient;
 import com.ofs.service.UserService;
 import com.ofs.validators.user.UserCreateValidator;
 import org.junit.Before;
@@ -11,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.ClientHttpResponse;
@@ -48,6 +50,9 @@ public abstract class WebIntegrationTestbootstrap {
     @Autowired
     public UserService userService;
 
+    @MockBean
+    public AuthenticationClient authenticationClient;
+
     @Before
     public void superSetup() {
         reset(userRepository);
@@ -70,13 +75,14 @@ public abstract class WebIntegrationTestbootstrap {
         });
     }
 
-    protected HttpHeaders createHeaders() {
+    protected HttpHeaders createHeaders(String token) {
         HttpHeaders headers = new HttpHeaders();
+        headers.add("Authorization" , "Bearer " + token);
         return headers;
     }
 
-    protected HttpHeaders createJSONHeaders() {
-        HttpHeaders headers = this.createHeaders();
+    protected HttpHeaders createJSONHeaders(String token) {
+        HttpHeaders headers = this.createHeaders(token);
         headers.setContentType(MediaType.APPLICATION_JSON);
         return headers;
     }
