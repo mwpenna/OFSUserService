@@ -9,6 +9,19 @@ And(/^I should see the user was returned$/) do
   expect(@result["firstName"]).to eql @user.firstName
   expect(@result["role"]).to eql @user.role
   expect(@result["userName"]).to eql @user.userName
+  expect(@result["password"]).to be nil
+  expect(@result["emailAddress"]).to eql @user.emailAddress
+  expect(@result["activeFlag"]).to eql true
+  expect(@result["company"]["href"]).to eql @user.company_href
+  expect(@result["company"]["name"]).to eql @user.company_name
+end
+
+And(/^I should see the user was returned for a SYSTEM_ADMIN$/) do
+  expect(@result["id"]).to_not be_nil
+  expect(@result["lastName"]).to eql @user.lastName
+  expect(@result["firstName"]).to eql @user.firstName
+  expect(@result["role"]).to eql @user.role
+  expect(@result["userName"]).to eql @user.userName
   expect(@result["password"]).to_not eql @user.password
   expect(@result["emailAddress"]).to eql @user.emailAddress
   expect(@result["activeFlag"]).to eql true

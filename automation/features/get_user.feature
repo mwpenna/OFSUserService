@@ -15,7 +15,7 @@ Feature: User is returned when get user endpoint is called
     Given A company and user exists with token
     When A request to get the user is received by SYSTEM_ADMIN
     Then the response should have a status of 200
-    And I should see the user was returned
+    And I should see the user was returned for a SYSTEM_ADMIN
 
   Scenario: User with role of ADMIN cannot get user from different company
     Given A ADMIN user exists for a company

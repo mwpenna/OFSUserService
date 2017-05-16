@@ -1,6 +1,8 @@
 package com.ofs.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonView;
+import com.ofs.server.filter.views.SystemAdmin;
 import com.ofs.server.model.BaseOFSEntity;
 import com.ofs.utils.StringUtils;
 
@@ -54,11 +56,13 @@ public class User extends BaseOFSEntity {
     private Company company;
     private Role role;
     private String userName;
-    private String password;
     private String emailAddress;
     private String token;
     private ZonedDateTime tokenExpDate;
     private boolean activeFlag;
+
+    @JsonView(SystemAdmin.class)
+    private String password;
 
     @JsonIgnore
     public String getIdFromHref() {

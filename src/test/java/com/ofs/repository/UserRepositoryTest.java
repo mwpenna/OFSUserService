@@ -1,6 +1,5 @@
 package com.ofs.repository;
 
-import com.couchbase.client.deps.com.fasterxml.jackson.core.JsonParseException;
 import com.couchbase.client.java.Bucket;
 import com.couchbase.client.java.Cluster;
 import com.couchbase.client.java.document.JsonDocument;
@@ -13,19 +12,15 @@ import com.couchbase.client.java.query.DefaultN1qlQueryResult;
 import com.couchbase.client.java.query.ParameterizedN1qlQuery;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ofs.models.Company;
 import com.ofs.models.User;
 import com.ofs.server.errors.NotFoundException;
 import com.ofs.server.errors.ServiceUnavailableException;
 import com.ofs.server.repository.ConnectionManager;
-import com.ofs.server.utils.Dates;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.internal.matchers.Null;
 
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -79,14 +74,14 @@ public class UserRepositoryTest {
 
         query = ParameterizedN1qlQuery.parameterized("", JsonObject.create());
         rows = new ArrayList<>();
-        when(connectionManager.getBucket("user")).thenReturn(bucket);
+        when(connectionManager.getBucket("users")).thenReturn(bucket);
         when(ofsObjectMapper.writeValueAsString(anyString())).thenReturn(objectMapper.writeValueAsString(user));
     }
 
     @Test
     public void addUser_happyPath() throws com.couchbase.client.deps.com.fasterxml.jackson.core.JsonProcessingException, JsonProcessingException {
         objectUnderTest.addUser(user);
-        verify(connectionManager.getBucket("user"), times(1)).insert(any());
+        verify(connectionManager.getBucket("users"), times(1)).insert(any());
     }
 
     @Test(expected = ServiceUnavailableException.class)

@@ -9,6 +9,7 @@ import com.ofs.server.OFSController;
 import com.ofs.server.OFSServerId;
 import com.ofs.server.errors.ForbiddenException;
 import com.ofs.server.errors.NotFoundException;
+import com.ofs.server.filter.views.Public;
 import com.ofs.server.form.OFSServerForm;
 import com.ofs.server.form.ValidationSchema;
 import com.ofs.server.form.update.ChangeSet;
@@ -37,6 +38,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.io.IOException;
 import java.net.URI;
@@ -46,7 +48,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Slf4j
-@OFSController
+@OFSController(resolver = "userResolver", filter = Public.class)
 @RequestMapping(value="/users", produces = MediaType.APPLICATION_JSON_VALUE)
 public class UserController {
 
@@ -94,6 +96,7 @@ public class UserController {
     }
 
     @GetMapping(value= "/id/{id}")
+    @ResponseBody
     @Authenticate
     public User getUserById(@PathVariable("id") String id, @RequestHeader("Authorization") String authToken) throws Exception {
         log.debug("Fetching User with id {}", id);
@@ -153,6 +156,7 @@ public class UserController {
         return ResponseEntity.noContent().build();
     }
 
+    @ResponseBody
     @GetMapping(value="/getToken")
     public ResponseEntity getToken(@RequestHeader HttpHeaders headers) throws Exception {
 
@@ -165,6 +169,7 @@ public class UserController {
         return ResponseEntity.ok(userService.getToken(basicAuthUser));
     }
 
+    @ResponseBody
     @GetMapping(value = "/authenticate")
     public JWTSubject authenticateUser(@RequestHeader HttpHeaders headers) throws IOException {
         String authString = getValidAuthHeader(headers);
