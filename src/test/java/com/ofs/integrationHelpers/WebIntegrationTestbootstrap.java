@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ofs.repository.CompanyRepository;
 import com.ofs.repository.UserRepository;
 import com.ofs.server.client.AuthenticationClient;
+import com.ofs.server.repository.RepositoryInitialization;
 import com.ofs.service.UserService;
 import com.ofs.validators.user.UserCreateValidator;
 import org.junit.Before;
@@ -52,6 +53,9 @@ public abstract class WebIntegrationTestbootstrap {
 
     @MockBean
     public AuthenticationClient authenticationClient;
+
+    @MockBean
+    RepositoryInitialization repositoryInitialization;
 
     @Before
     public void superSetup() {

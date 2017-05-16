@@ -1,7 +1,6 @@
 package com.ofs.repository;
 
 import com.couchbase.client.deps.com.fasterxml.jackson.core.JsonProcessingException;
-import com.couchbase.client.java.document.JsonDocument;
 import com.couchbase.client.java.document.json.JsonObject;
 import com.couchbase.client.java.error.DocumentDoesNotExistException;
 import com.couchbase.client.java.error.TemporaryFailureException;
@@ -9,16 +8,20 @@ import com.couchbase.client.java.query.ParameterizedN1qlQuery;
 import com.ofs.models.User;
 import com.ofs.server.errors.NotFoundException;
 import com.ofs.server.errors.ServiceUnavailableException;
+import com.ofs.server.repository.BaseCouchbaseRepository;
+import com.ofs.server.repository.ConnectionManager;
+import com.ofs.server.repository.OFSRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Component;
 
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
 
-@Repository
 @Slf4j
+@Component
+@OFSRepository("users")
 public class UserRepository extends BaseCouchbaseRepository<User> {
 
     @Autowired
@@ -28,8 +31,7 @@ public class UserRepository extends BaseCouchbaseRepository<User> {
         Objects.requireNonNull(user);
 
         log.info("Attempting to add user with id: {}", user.getId());
-//        add(user.getId().toString(), couchbaseFactory.getUserBucket(), user);
-        add(user.getId().toString(), connectionManager.getUserBucket(), user);
+        add(user.getId().toString(), connectionManager.getBucket("users"), user);
         log.info("User with id: {} has been added", user.getId());
     }
 
@@ -40,8 +42,7 @@ public class UserRepository extends BaseCouchbaseRepository<User> {
             return Optional.empty();
         }
 
-//        return queryForObjectById(id, couchbaseFactory.getUserBucket(), User.class);
-        return queryForObjectById(id, connectionManager.getUserBucket(), User.class);
+        return queryForObjectById(id, connectionManager.getBucket("users"), User.class);
     }
 
     public Optional<User> getUserByUserName(String username) throws Exception{
@@ -52,8 +53,7 @@ public class UserRepository extends BaseCouchbaseRepository<User> {
         try {
             ParameterizedN1qlQuery query = ParameterizedN1qlQuery.parameterized(
                 generateGetByUserNameQuery(), generateGetByUserNameParameters(username));
-//            return queryForObjectByParameters(query, couchbaseFactory.getUserBucket(), User.class);
-            return queryForObjectByParameters(query, connectionManager.getUserBucket(), User.class);
+            return queryForObjectByParameters(query, connectionManager.getBucket("users"), User.class);
         }
         catch (NoSuchElementException e) {
             log.info("No results returned for getUserByUserName with username: {}", username);
@@ -73,8 +73,7 @@ public class UserRepository extends BaseCouchbaseRepository<User> {
         try {
             ParameterizedN1qlQuery query = ParameterizedN1qlQuery.parameterized(
                     generateGetByEmailAddressQuery(), generateGetByEmailAddressParameters(emailAddress));
-//            return queryForObjectByParameters(query, couchbaseFactory.getUserBucket(), User.class);
-            return queryForObjectByParameters(query, connectionManager.getUserBucket(), User.class);
+            return queryForObjectByParameters(query, connectionManager.getBucket("users"), User.class);
         }
         catch (NoSuchElementException e) {
             log.info("No results returned for getUserByEmailAddress with emailaddress: {}", emailAddress);
@@ -91,8 +90,7 @@ public class UserRepository extends BaseCouchbaseRepository<User> {
 
         try {
             log.info("Attempting to update user with id: {}", user.getId());
-//            update(user.getId().toString(), couchbaseFactory.getUserBucket(), user);
-            update(user.getId().toString(), connectionManager.getUserBucket(), user);
+            update(user.getId().toString(), connectionManager.getBucket("users"), user);
             log.info("user with id: {} has been updated", user.getId());
         }
         catch(DocumentDoesNotExistException e) {
@@ -110,8 +108,7 @@ public class UserRepository extends BaseCouchbaseRepository<User> {
 
         try{
             log.info("Attempting to delete user with id: {}", id);
-//            delete(id, couchbaseFactory.getUserBucket());
-            delete(id, connectionManager.getUserBucket());
+            delete(id, connectionManager.getBucket("users"));
             log.info("user with id: {} has been delete", id);
         }
         catch (DocumentDoesNotExistException e) {
@@ -119,13 +116,13 @@ public class UserRepository extends BaseCouchbaseRepository<User> {
             throw new NotFoundException();
         }
         catch (TemporaryFailureException e) {
-            log.error("Temporary Failure with couchbase occured" , e);
+            log.error("Temporary Failure with couchbase occurred" , e);
             throw new ServiceUnavailableException();
         }
     }
 
     private String generateGetByUserNameQuery() {
-        return "SELECT `" + connectionManager.getUserBucket().name() + "`.* FROM `" + connectionManager.getUserBucket().name() + "` where userName = $userName";
+        return "SELECT `" + connectionManager.getBucket("users").name() + "`.* FROM `" + connectionManager.getBucket("users").name() + "` where userName = $userName";
     }
 
     private JsonObject generateGetByUserNameParameters(String userName) {
@@ -133,7 +130,7 @@ public class UserRepository extends BaseCouchbaseRepository<User> {
     }
 
     private String generateGetByEmailAddressQuery() {
-        return "SELECT `" + connectionManager.getUserBucket().name() + "`.* FROM `" + connectionManager.getUserBucket().name() + "` where emailAddress = $emailAddress";
+        return "SELECT `" + connectionManager.getBucket("users").name() + "`.* FROM `" + connectionManager.getBucket("users").name() + "` where emailAddress = $emailAddress";
     }
 
     private JsonObject generateGetByEmailAddressParameters(String emailAddress) {

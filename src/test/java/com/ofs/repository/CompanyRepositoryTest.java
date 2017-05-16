@@ -9,6 +9,7 @@ import com.couchbase.client.java.query.DefaultN1qlQueryResult;
 import com.couchbase.client.java.query.ParameterizedN1qlQuery;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ofs.models.Company;
+import com.ofs.server.repository.ConnectionManager;
 import com.ofs.server.utils.Dates;
 import org.junit.Before;
 import org.junit.Test;
@@ -58,7 +59,7 @@ public class CompanyRepositoryTest {
 
         query = ParameterizedN1qlQuery.parameterized("", JsonObject.create());
         rows = new ArrayList<>();
-        when(connectionManager.getCompanyBucket()).thenReturn(bucket);
+        when(connectionManager.getBucket("company")).thenReturn(bucket);
 
         id = UUID.randomUUID();
 

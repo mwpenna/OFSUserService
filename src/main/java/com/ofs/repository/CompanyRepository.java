@@ -1,30 +1,31 @@
 package com.ofs.repository;
 
 import com.couchbase.client.deps.com.fasterxml.jackson.core.JsonProcessingException;
-import com.couchbase.client.java.document.JsonDocument;
 import com.couchbase.client.java.document.json.JsonObject;
 import com.couchbase.client.java.query.ParameterizedN1qlQuery;
 
 import com.ofs.models.Company;
 
-import com.ofs.models.User;
+import com.ofs.server.repository.BaseCouchbaseRepository;
+import com.ofs.server.repository.ConnectionManager;
+import com.ofs.server.repository.OFSRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Component;
 
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
-@Repository
 @Slf4j
+@Component
+@OFSRepository(value = "company")
 public class CompanyRepository extends BaseCouchbaseRepository<Company> {
 
     @Autowired
     ConnectionManager connectionManager;
 
     public void addCompany(Company company) throws JsonProcessingException, com.fasterxml.jackson.core.JsonProcessingException {
-//        add(company.getId().toString(), couchbaseFactory.getCompanyBucket(), company);
-        add(company.getId().toString(), connectionManager.getCompanyBucket(), company);
+        add(company.getId().toString(), connectionManager.getBucket("company"), company);
     }
 
     public Optional<Company> getCompanyById(String id) throws Exception {
@@ -34,8 +35,7 @@ public class CompanyRepository extends BaseCouchbaseRepository<Company> {
 
         try {
             ParameterizedN1qlQuery query = ParameterizedN1qlQuery.parameterized(generateGetByIdQuery(), generateGetByIdParameters(id));
-//            return queryForObjectByParameters(query, couchbaseFactory.getCompanyBucket(), Company.class);
-            return queryForObjectByParameters(query, connectionManager.getCompanyBucket(), Company.class);
+            return queryForObjectByParameters(query, connectionManager.getBucket("company"), Company.class);
         }
         catch (NoSuchElementException e) {
             log.warn("Company id {} does not exists", id, e);
@@ -51,8 +51,7 @@ public class CompanyRepository extends BaseCouchbaseRepository<Company> {
         try{
             ParameterizedN1qlQuery query = ParameterizedN1qlQuery.parameterized(
                     generateGetByNameQuery(), generateGetByNameParameters(name));
-//            return queryForObjectByParameters(query, couchbaseFactory.getCompanyBucket(), Company.class);
-            return queryForObjectByParameters(query, connectionManager.getCompanyBucket(), Company.class);
+            return queryForObjectByParameters(query, connectionManager.getBucket("company"), Company.class);
         }
         catch (NoSuchElementException e) {
             log.info("No results returned for getCompanyByName with company name: {}", name);
@@ -61,7 +60,7 @@ public class CompanyRepository extends BaseCouchbaseRepository<Company> {
     }
 
     private String generateGetByIdQuery() {
-        return "SELECT `" + connectionManager.getCompanyBucket().name() + "`.* FROM `" + connectionManager.getCompanyBucket().name() + "` where id = $id";
+        return "SELECT `" + connectionManager.getBucket("company").name() + "`.* FROM `" + connectionManager.getBucket("company").name() + "` where id = $id";
     }
 
     private JsonObject generateGetByIdParameters(String id) {
@@ -69,7 +68,7 @@ public class CompanyRepository extends BaseCouchbaseRepository<Company> {
     }
 
     private String generateGetByNameQuery() {
-        return "SELECT `" + connectionManager.getCompanyBucket().name() + "`.* FROM `" + connectionManager.getCompanyBucket().name() + "` where name = $name";
+        return "SELECT `" + connectionManager.getBucket("company").name() + "`.* FROM `" + connectionManager.getBucket("company").name() + "` where name = $name";
     }
 
     private JsonObject generateGetByNameParameters(String name) {

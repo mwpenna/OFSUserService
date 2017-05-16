@@ -17,6 +17,7 @@ import com.ofs.models.Company;
 import com.ofs.models.User;
 import com.ofs.server.errors.NotFoundException;
 import com.ofs.server.errors.ServiceUnavailableException;
+import com.ofs.server.repository.ConnectionManager;
 import com.ofs.server.utils.Dates;
 import org.junit.Before;
 import org.junit.Test;
@@ -78,14 +79,14 @@ public class UserRepositoryTest {
 
         query = ParameterizedN1qlQuery.parameterized("", JsonObject.create());
         rows = new ArrayList<>();
-        when(connectionManager.getUserBucket()).thenReturn(bucket);
+        when(connectionManager.getBucket("user")).thenReturn(bucket);
         when(ofsObjectMapper.writeValueAsString(anyString())).thenReturn(objectMapper.writeValueAsString(user));
     }
 
     @Test
     public void addUser_happyPath() throws com.couchbase.client.deps.com.fasterxml.jackson.core.JsonProcessingException, JsonProcessingException {
         objectUnderTest.addUser(user);
-        verify(connectionManager.getUserBucket(), times(1)).insert(any());
+        verify(connectionManager.getBucket("user"), times(1)).insert(any());
     }
 
     @Test(expected = ServiceUnavailableException.class)

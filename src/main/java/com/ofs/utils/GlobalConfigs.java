@@ -8,12 +8,6 @@ import org.springframework.context.annotation.Configuration;
 @Data
 public class GlobalConfigs {
 
-    @Value("${clusterHostName}")
-    private String clusterHostName;
-
-    @Value("${clusterPassword}")
-    private String clusterPassword;
-
     @Value("${sharedSecret}")
     private String sharedSecret;
 }

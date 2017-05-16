@@ -1,10 +1,8 @@
 package com.ofs.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.ofs.integrationHelpers.WebIntegrationTestbootstrap;
 import com.ofs.models.Company;
 import com.ofs.models.JWTSubject;
-import com.ofs.models.TokenResponse;
 import com.ofs.models.User;
 import lombok.Data;
 import org.junit.Before;
@@ -88,7 +86,7 @@ public class UserControllerTest extends WebIntegrationTestbootstrap {
     public void updateUser_happyPathSucceeds() throws Exception {
         when(userRepository.getUserById(anyString())).thenReturn(Optional.of(generateResponseUser()));
         when(authenticationClient.authenticate(any())).thenReturn(generateJWTServerSubject());
-        
+
         HttpHeaders headers = createHeaders("123");
         headers.setContentType(MediaType.APPLICATION_JSON);
 

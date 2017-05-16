@@ -1,14 +1,10 @@
 package com.ofs;
 
-import com.ofs.integrationHelpers.MockAuthClient;
 import com.ofs.repository.CompanyRepository;
-import com.ofs.repository.ConnectionManager;
 import com.ofs.repository.UserRepository;
-import com.ofs.server.client.AuthenticationClient;
-import com.ofs.server.security.AuthInterceptor;
+import com.ofs.server.repository.ConnectionManager;
 import com.ofs.service.UserService;
 import com.ofs.validators.user.UserCreateValidator;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;

@@ -17,6 +17,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ofs.models.User;
 import com.ofs.server.config.JacksonConfiguration;
 import com.ofs.server.errors.ServiceUnavailableException;
+import com.ofs.server.repository.ConnectionManager;
 import lombok.Data;
 import org.junit.Before;
 import org.junit.Test;
@@ -74,7 +75,7 @@ public class BaseCouchbaseRepositoryTest {
 
         query = ParameterizedN1qlQuery.parameterized("", JsonObject.create());
         rows = new ArrayList<>();
-        when(connectionManager.getUserBucket()).thenReturn(bucket);
+        when(connectionManager.getBucket("user")).thenReturn(bucket);
     }
 
     @Test(expected = NullPointerException.class)
@@ -89,7 +90,7 @@ public class BaseCouchbaseRepositoryTest {
 
     @Test
     public void queryForObjectByParametersWithNoResults_shouldReturnEmptyOptional() throws Exception {
-        when(connectionManager.getUserBucket().query(eq(query))).thenReturn(generateSuccessResult());
+        when(connectionManager.getBucket("user").query(eq(query))).thenReturn(generateSuccessResult());
         Optional<User> optional = objectUnderTest.queryForObjectByParameters(query, bucket, User.class);
         assertFalse(optional.isPresent());
     }
@@ -99,26 +100,26 @@ public class BaseCouchbaseRepositoryTest {
         String userString = objectMapper.writeValueAsString(user);
         DefaultAsyncN1qlQueryRow row = new DefaultAsyncN1qlQueryRow(userString.getBytes());
         rows.add(row);
-        when(connectionManager.getUserBucket().query(eq(query))).thenReturn(generateSuccessResult());
+        when(connectionManager.getBucket("user").query(eq(query))).thenReturn(generateSuccessResult());
         Optional<User> optional = objectUnderTest.queryForObjectByParameters(query, bucket, User.class);
         assertTrue(optional.isPresent());
     }
 
     @Test(expected = ServiceUnavailableException.class)
     public void queryForObjectByParametersBackPressureException_shouldThrowServiceUnavalableException() throws Exception {
-        when(connectionManager.getUserBucket().query(eq(query))).thenThrow(new BackpressureException());
+        when(connectionManager.getBucket("user").query(eq(query))).thenThrow(new BackpressureException());
         objectUnderTest.queryForObjectByParameters(query, bucket, User.class);
     }
 
     @Test(expected = ServiceUnavailableException.class)
     public void queryForObjectByParametersRequestCancelledException_shouldThrowServiceUnavalableException() throws Exception {
-        when(connectionManager.getUserBucket().query(eq(query))).thenThrow(new RequestCancelledException());
+        when(connectionManager.getBucket("user").query(eq(query))).thenThrow(new RequestCancelledException());
         objectUnderTest.queryForObjectByParameters(query, bucket, User.class);
     }
 
     @Test(expected = ServiceUnavailableException.class)
     public void queryForObjectByParametersRuntimeException_shouldThrowServiceUnavalableException() throws Exception {
-        when(connectionManager.getUserBucket().query(eq(query))).thenThrow(new RuntimeException());
+        when(connectionManager.getBucket("user").query(eq(query))).thenThrow(new RuntimeException());
         objectUnderTest.queryForObjectByParameters(query, bucket, User.class);
     }
 
