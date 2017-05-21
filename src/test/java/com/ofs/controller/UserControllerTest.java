@@ -52,12 +52,24 @@ public class UserControllerTest extends WebIntegrationTestbootstrap {
     @Test
     public void getUser_happyPathSuccceeds() throws Exception {
         when(authenticationClient.authenticate(any())).thenReturn(generateJWTServerSubject());
-        when(userRepository.getUserById(any())).thenReturn(Optional.of(generateResponseUser()));
+        when(userService.getUserById(any())).thenReturn(generateResponseUser());
 
         HttpHeaders headers = createHeaders("123");
         HttpEntity<String> entity = new HttpEntity<>(headers);
 
         ResponseEntity<String> response = restTemplate.exchange(apiUrl("users/id/"+id), HttpMethod.GET,entity, String.class);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+    }
+
+    @Test
+    public void getUserByToken_happyPathSuccceeds() throws Exception {
+        when(authenticationClient.authenticate(any())).thenReturn(generateJWTServerSubject());
+        when(userService.getUserById(any())).thenReturn(generateResponseUser());
+
+        HttpHeaders headers = createHeaders("123");
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+
+        ResponseEntity<String> response = restTemplate.exchange(apiUrl("users/token"), HttpMethod.GET,entity, String.class);
         assertEquals(HttpStatus.OK, response.getStatusCode());
     }
 
