@@ -15,8 +15,11 @@ import com.ofs.server.form.ValidationSchema;
 import com.ofs.server.form.update.ChangeSet;
 import com.ofs.server.model.OFSErrors;
 import com.ofs.server.security.Authenticate;
+import com.ofs.server.security.SecurityContext;
+import com.ofs.server.security.Subject;
 import com.ofs.service.UserService;
 import com.ofs.utils.GlobalConfigs;
+import com.ofs.utils.StringUtils;
 import com.ofs.validators.user.UserDeleteValidator;
 import com.ofs.validators.user.UserGetTokenValidator;
 import com.ofs.validators.user.UserCreateValidator;
@@ -32,6 +35,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -98,23 +102,17 @@ public class UserController {
     @GetMapping(value= "/id/{id}")
     @ResponseBody
     @Authenticate
-    public User getUserById(@PathVariable("id") String id, @RequestHeader("Authorization") String authToken) throws Exception {
+    public User getUserById(@PathVariable("id") String id) throws Exception {
         log.debug("Fetching User with id {}", id);
-        Optional<User> optionalUser = userRepository.getUserById(id);
+        return userService.getUserById(id);
+    }
 
-        if(optionalUser.isPresent()) {
-            User user = optionalUser.get();
-            log.debug("User found with id {}", user.getId());
-
-            OFSErrors errors = new OFSErrors();
-            getValidator.validate(user, errors);
-
-            return optionalUser.get();
-        }
-        else {
-            log.error("User not found");
-            throw new NotFoundException();
-        }
+    @GetMapping(value = "/token")
+    @ResponseBody
+    @Authenticate
+    public User getUserByToken() throws Exception {
+        Subject subject = SecurityContext.getSubject();
+        return userService.getUserById(StringUtils.getIdFromURI(subject.getHref()));
     }
 
     @ValidationSchema(value = "/user-update.json")
@@ -158,6 +156,7 @@ public class UserController {
 
     @ResponseBody
     @GetMapping(value="/getToken")
+    @CrossOrigin(origins = "http://localhost:4200")
     public ResponseEntity getToken(@RequestHeader HttpHeaders headers) throws Exception {
 
         String authString = getValidAuthHeader(headers);

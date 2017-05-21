@@ -8,9 +8,12 @@ import com.ofs.models.User;
 import com.ofs.repository.UserRepository;
 import com.ofs.server.OFSController;
 import com.ofs.server.errors.ForbiddenException;
+import com.ofs.server.errors.NotFoundException;
+import com.ofs.server.model.OFSErrors;
 import com.ofs.server.utils.Dates;
 import com.ofs.utils.GlobalConfigs;
 import com.ofs.utils.StringUtils;
+import com.ofs.validators.user.UserGetValidator;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.JwtException;
@@ -28,6 +31,7 @@ import java.security.Key;
 import java.time.Duration;
 import java.time.ZonedDateTime;
 import java.util.Date;
+import java.util.Objects;
 import java.util.Optional;
 
 @Component
@@ -40,6 +44,9 @@ public class UserService {
 
     @Autowired
     GlobalConfigs globalConfigs;
+
+    @Autowired
+    private UserGetValidator getValidator;
 
     @Autowired
     @Qualifier("ofsObjectMapper")
@@ -77,6 +84,26 @@ public class UserService {
         log.debug("user with id: {} successfully updated", user.getId());
 
         return jwtSubject;
+    }
+
+    public User getUserById(String id) throws Exception {
+        Objects.requireNonNull(id);
+
+        Optional<User> optionalUser = userRepository.getUserById(id);
+
+        if(optionalUser.isPresent()) {
+            User user = optionalUser.get();
+            log.debug("User found with id {}", user.getId());
+
+            OFSErrors errors = new OFSErrors();
+            getValidator.validate(user, errors);
+
+            return optionalUser.get();
+        }
+        else {
+            log.error("User not found");
+            throw new NotFoundException();
+        }
     }
 
     private User authenticateUser(Optional<User> optionalUser, String token, String id) {
