@@ -30,7 +30,7 @@ When(/^A request to authenticate the user with wrong JWT token$/) do
   sleep(1)
   @service_client.get_by_url_with_auth(@service_client.get_base_uri.to_s+"/users/getToken", "Basic "+ basic_auth)
   @service_client.get_by_url_with_auth(@service_client.get_base_uri.to_s+"/users/getToken", "Basic "+ basic_auth)
-  @result = @service_client.get_by_url_with_auth(@service_client.get_base_uri.to_s+"/users/authenticate", "Bearer "+@user.token)
+  @result = @service_client.get_by_url_with_auth(@service_client.get_base_uri.to_s+"/users/authenticate", "Bearer "+@authToken)
 end
 
 When(/^A request to authenticate the user$/) do

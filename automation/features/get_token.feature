@@ -37,13 +37,11 @@ Feature: Token is generated and returned when get token is called
     Given A company and user exists
     When A request is made to get a token with valid username and password
     Then the response should have a status of 200
-    And I should see the user is populated with a token
 
   Scenario: User updated with token exp date after get token is called
     Given A company and user exists
     When A request is made to get a token with valid username and password
     Then the response should have a status of 200
-    And I should see the user is populated with a tokenExpDate
 
   Scenario: Get token is called a second time for a user token response is correct
     Given A company and user exists with token

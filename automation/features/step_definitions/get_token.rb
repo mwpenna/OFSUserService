@@ -47,7 +47,7 @@ Given(/^A company and user exists with token$/) do
   @location = @result.headers['location']
   basic_auth = Base64.encode64( @user.userName+":"+ @user.password)
   sleep(1)
-  authToken = @service_client.get_by_url_with_auth(@service_client.get_base_uri.to_s+"/users/getToken", "Basic "+ basic_auth)['token']
+  @authToken = @service_client.get_by_url_with_auth(@service_client.get_base_uri.to_s+"/users/getToken", "Basic "+ basic_auth)['token']
   result = @service_client.get_by_url_with_auth(@location, "Bearer "+ authToken)
   @user.userHref = @location
   @user.token=result['token']

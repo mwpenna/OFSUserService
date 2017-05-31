@@ -7,6 +7,7 @@ import com.ofs.models.User;
 import com.ofs.repository.UserRepository;
 import com.ofs.server.OFSController;
 import com.ofs.server.OFSServerId;
+import com.ofs.server.errors.BadRequestException;
 import com.ofs.server.errors.ForbiddenException;
 import com.ofs.server.errors.NotFoundException;
 import com.ofs.server.filter.views.Public;
@@ -209,10 +210,21 @@ public class UserController {
         user.setActiveFlag(true);
 
         if(user.getCompany().getId() == null) {
-            user.getCompany().setId(UUID.fromString(user.getCompany().getIdFromHref()));
+            try {
+                user.getCompany().setId(UUID.fromString(user.getCompany().getIdFromHref()));
+            }
+            catch (IllegalArgumentException e) {
+                log.warn("{} is invalid UUID", user.getCompany().getIdFromHref());
+                throw new BadRequestException(generateBadUUIDException());
+            }
         }
     }
 
+    private OFSErrors generateBadUUIDException() {
+        OFSErrors ofsErrors = new OFSErrors();
+        ofsErrors.rejectValue("user.company.id.invalid", "company.id", "Invalid company id. Company does not exits.");
+        return ofsErrors;
+    }
 
     private String getValidAuthHeader(HttpHeaders headers) {
 
