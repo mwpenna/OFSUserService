@@ -17,6 +17,8 @@ import org.springframework.http.ResponseEntity;
 import java.io.IOException;
 import java.net.URI;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -116,6 +118,26 @@ public class UserControllerTest extends WebIntegrationTestbootstrap {
 
         ResponseEntity<String> response = restTemplate.exchange(apiUrl("users/authenticate"), HttpMethod.GET, entity, String.class);
         assertEquals(HttpStatus.OK, response.getStatusCode());
+    }
+
+    @Test
+    public void getUsersByCompanyId_happyPathSucceeds() throws Exception {
+        when(authenticationClient.authenticate(any())).thenReturn(generateJWTServerSubject());
+        when(userRepository.getUsersByCompanyId(anyString())).thenReturn(Optional.of(generateUserList()));
+
+        HttpHeaders headers = createHeaders("123");
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+
+        ResponseEntity<String> response = restTemplate.exchange(apiUrl("users/company/id/"+companyId), HttpMethod.GET,entity, String.class);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+    }
+
+    private List<User> generateUserList() {
+        List<User> userList = new ArrayList<>();
+
+        userList.add(generateResponseUser());
+
+        return userList;
     }
 
     private JWTSubject generateJWTSubject() {

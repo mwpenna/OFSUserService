@@ -20,6 +20,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.internal.matchers.Null;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -57,12 +58,14 @@ public class UserRepositoryTest {
     private List<AsyncN1qlQueryRow> rows;
     private User user;
     private UUID id;
+    private UUID companyId;
 
     @Before
     public void setup() throws JsonProcessingException {
         initMocks(this);
 
         id = UUID.randomUUID();
+        companyId = UUID.randomUUID();
 
         user = new User();
         user.setId(id);
@@ -176,6 +179,28 @@ public class UserRepositoryTest {
     public void deleteUserById_shouldThrowServiceUnavailableExceptionWhenCouchbaseThrowsTempFailureException() {
         when(bucket.remove(anyString())).thenThrow(new TemporaryFailureException());
         objectUnderTest.deleteUserById("123");
+    }
+
+    @Test(expected = ServiceUnavailableException.class)
+    public void getUsersByCompanyId_shouldThrowServiceUnavailableExceptionWhenCouchbaseThrowsTempFailureException() throws Exception {
+        when(bucket.query(any(ParameterizedN1qlQuery.class))).thenThrow(new TemporaryFailureException());
+        objectUnderTest.getUsersByCompanyId(UUID.randomUUID().toString());
+    }
+
+    @Test
+    public void getUsersByCompanyId_shouldReturnOptionalUserList() throws Exception {
+        String userString = objectMapper.writeValueAsString(user);
+        DefaultAsyncN1qlQueryRow row = new DefaultAsyncN1qlQueryRow(userString.getBytes());
+        rows.add(row);
+        when(bucket.query(any(ParameterizedN1qlQuery.class))).thenReturn(generateSuccessResult());
+        Optional<List<User>> optional = objectUnderTest.getUsersByCompanyId(companyId.toString());
+        assertTrue(optional.isPresent());
+    }
+
+    @Test
+    public void getUsersByCompanyId_ShouldReturnEmptyOptionalwhenCompanyIdIsNull() throws Exception {
+        Optional<List<User>> userOptional = objectUnderTest.getUsersByCompanyId(null);
+        assertFalse(userOptional.isPresent());
     }
 
     private JsonDocument generateJsonDocument() {

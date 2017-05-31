@@ -24,7 +24,6 @@ import com.ofs.validators.user.UserDeleteValidator;
 import com.ofs.validators.user.UserGetTokenValidator;
 import com.ofs.validators.user.UserCreateValidator;
 
-import com.ofs.validators.user.UserGetValidator;
 import com.ofs.validators.user.UserUpdateValidator;
 import lombok.extern.slf4j.Slf4j;
 
@@ -46,6 +45,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
@@ -66,9 +66,6 @@ public class UserController {
     private UserGetTokenValidator getTokenValidator;
 
     @Autowired
-    private UserGetValidator getValidator;
-
-    @Autowired
     private UserUpdateValidator updateValidator;
 
     @Autowired
@@ -87,6 +84,7 @@ public class UserController {
     @ValidationSchema(value = "/user-create.json")
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     @Authenticate
+    @CrossOrigin(origins = "*")
     public ResponseEntity create(@OFSServerId URI id, OFSServerForm<User> form) throws Exception{
         User user = form.create(id);
         defaultUserValues(user);
@@ -110,6 +108,7 @@ public class UserController {
     @GetMapping(value = "/token")
     @ResponseBody
     @Authenticate
+    @CrossOrigin(origins = "*")
     public User getUserByToken() throws Exception {
         Subject subject = SecurityContext.getSubject();
         return userService.getUserById(StringUtils.getIdFromURI(subject.getHref()));
@@ -118,6 +117,7 @@ public class UserController {
     @ValidationSchema(value = "/user-update.json")
     @PostMapping(value = "/id/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     @Authenticate
+    @CrossOrigin(origins = "*")
     public ResponseEntity update(@PathVariable String id, OFSServerForm<User> form) throws Exception {
         Optional<User> userOptional = userRepository.getUserById(id);
 
@@ -156,7 +156,7 @@ public class UserController {
 
     @ResponseBody
     @GetMapping(value="/getToken")
-    @CrossOrigin(origins = "http://localhost:4200")
+    @CrossOrigin(origins = "*")
     public ResponseEntity getToken(@RequestHeader HttpHeaders headers) throws Exception {
 
         String authString = getValidAuthHeader(headers);
@@ -174,6 +174,21 @@ public class UserController {
         String authString = getValidAuthHeader(headers);
         String token = getBeaerTokenFromAuthentication(authString);
         return userService.authenticate(token);
+    }
+
+    @ResponseBody
+    @GetMapping(value = "/company/id/{id}")
+    @Authenticate
+    @CrossOrigin(origins = "*")
+    public List<User> getUsersByCompanyId(@PathVariable("id") String id) throws Exception {
+        log.debug("Fetching Users for company id {}", id);
+        Optional<List<User>> optionalUser = userRepository.getUsersByCompanyId(id);
+        if(optionalUser.isPresent()) {
+            return optionalUser.get();
+        }
+        else {
+            return new ArrayList<>();
+        }
     }
 
     private String encryptPassword(String password) {
