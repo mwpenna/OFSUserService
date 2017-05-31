@@ -1,4 +1,4 @@
-Given(/^A company and multiple users exists$/) do
+Given(/^A company and multiple users exists with role (.*?)$/) do |property|
   basic_auth = Base64.encode64( "ofssystemadmin:p@$$Wordofs")
   authToken = @service_client.get_by_url_with_auth(@service_client.get_base_uri.to_s+"/users/getToken", "Basic "+ basic_auth)['token']
   company = FactoryGirl.build(:company, name: Faker::Company.name + (SecureRandom.random_number(999) + 1000).to_s)
@@ -10,7 +10,7 @@ Given(/^A company and multiple users exists$/) do
   rand(2..5).times do
     name = Faker::Pokemon.name + (SecureRandom.random_number(999) + 1000).to_s
     email = name + "@pokemon.com"
-    user = FactoryGirl.build(:user, userName: name, emailAddress: email, company_href: @company.href, company_name: @company.name, role: "WAREHOUSE")
+    user = FactoryGirl.build(:user, userName: name, emailAddress: email, company_href: @company.href, company_name: @company.name, role: property)
     result = @service_client.post_to_url_with_auth("/users", user.create_to_json, "Bearer "+ authToken)
     user.id = result.headers['location'].split("/id/").last
     @users << user
@@ -18,7 +18,7 @@ Given(/^A company and multiple users exists$/) do
 
   name = Faker::Pokemon.name + (SecureRandom.random_number(999) + 1000).to_s
   email = name + "@pokemon.com"
-  @user = FactoryGirl.build(:user, userName: name, emailAddress: email, company_href: @company.href, company_name: @company.name)
+  @user = FactoryGirl.build(:user, userName: name, emailAddress: email, company_href: @company.href, company_name: @company.name, role: property)
   @result = @service_client.post_to_url_with_auth("/users", @user.create_to_json, "Bearer "+ authToken)
   @location = @result.headers['location']
   basic_auth = Base64.encode64( @user.userName+":"+ @user.password)
@@ -50,6 +50,25 @@ Then(/^I should see the user list was returned$/) do
     expect(response["company"]["name"]).to eql user.company_name
     expect(response["token"]).to be nil
     expect(response["tokenExpDate"]).to be nil
+  end
+end
+
+Then(/^I should see the user list was returned for a SYSTEM_ADMIN$/) do
+  expect(@result["count"]).to eql @users.size
+  expect(@result["items"].size).to eql @users.size
+
+  @result["items"].each do |response|
+    user = @users.detect{|u| u.id == response['id']}
+    expect(response["id"]).to eql user.id
+    expect(response["lastName"]).to eql user.lastName
+    expect(response["firstName"]).to eql user.firstName
+    expect(response["role"]).to eql user.role
+    expect(response["userName"]).to eql user.userName
+    expect(response["password"]).to_not be_nil
+    expect(response["emailAddress"]).to eql user.emailAddress
+    expect(response["activeFlag"]).to eql true
+    expect(response["company"]["href"]).to eql user.company_href
+    expect(response["company"]["name"]).to eql user.company_name
   end
 end
 

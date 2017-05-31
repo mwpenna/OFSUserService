@@ -21,6 +21,7 @@ import com.ofs.service.UserService;
 import com.ofs.utils.GlobalConfigs;
 import com.ofs.utils.StringUtils;
 import com.ofs.validators.user.UserDeleteValidator;
+import com.ofs.validators.user.UserGetByCompanyIdValidator;
 import com.ofs.validators.user.UserGetTokenValidator;
 import com.ofs.validators.user.UserCreateValidator;
 
@@ -70,6 +71,9 @@ public class UserController {
 
     @Autowired
     private UserDeleteValidator userDeleteValidator;
+
+    @Autowired
+    private UserGetByCompanyIdValidator userGetByCompanyIdValidator;
 
     @Autowired
     GlobalConfigs globalConfigs;
@@ -182,6 +186,10 @@ public class UserController {
     @CrossOrigin(origins = "*")
     public List<User> getUsersByCompanyId(@PathVariable("id") String id) throws Exception {
         log.debug("Fetching Users for company id {}", id);
+
+        OFSErrors errors = new OFSErrors();
+        userGetByCompanyIdValidator.validate(userService.getUserById(StringUtils.getIdFromURI(SecurityContext.getSubject().getHref())), errors);
+
         Optional<List<User>> optionalUser = userRepository.getUsersByCompanyId(id);
         if(optionalUser.isPresent()) {
             return optionalUser.get();
