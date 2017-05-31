@@ -199,6 +199,10 @@ public class UserController {
     private void defaultUserValues(User user) {
         user.setId(UUID.fromString(user.getIdFromHref()));
         user.setActiveFlag(true);
+
+        if(user.getCompany().getId() == null) {
+            user.getCompany().setId(UUID.fromString(user.getCompany().getIdFromHref()));
+        }
     }
 
 

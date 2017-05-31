@@ -57,9 +57,13 @@ public class User extends BaseOFSEntity {
     private Role role;
     private String userName;
     private String emailAddress;
-    private String token;
-    private ZonedDateTime tokenExpDate;
     private boolean activeFlag;
+
+    @JsonView(SystemAdmin.class)
+    private ZonedDateTime tokenExpDate;
+
+    @JsonView(SystemAdmin.class)
+    private String token;
 
     @JsonView(SystemAdmin.class)
     private String password;
