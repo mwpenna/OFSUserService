@@ -3,7 +3,7 @@ package com.ofs.integrationHelpers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ofs.repository.CompanyRepository;
 import com.ofs.repository.UserRepository;
-import com.ofs.server.client.AuthenticationClient;
+import com.ofs.server.client.AuthClient;
 import com.ofs.server.repository.RepositoryInitialization;
 import com.ofs.service.UserService;
 import com.ofs.validators.user.UserCreateValidator;
@@ -45,14 +45,14 @@ public abstract class WebIntegrationTestbootstrap {
     public UserCreateValidator userCreateValidator;
 
     @Autowired
+    public AuthClient authClient;
+
+    @Autowired
     @Qualifier("ofsObjectMapper")
     public ObjectMapper ofsObjectMapper;
 
     @Autowired
     public UserService userService;
-
-    @MockBean
-    public AuthenticationClient authenticationClient;
 
     @MockBean
     RepositoryInitialization repositoryInitialization;

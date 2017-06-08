@@ -2,6 +2,7 @@ package com.ofs;
 
 import com.ofs.repository.CompanyRepository;
 import com.ofs.repository.UserRepository;
+import com.ofs.server.client.AuthClient;
 import com.ofs.server.repository.ConnectionManager;
 import com.ofs.service.UserService;
 import com.ofs.validators.user.UserCreateValidator;
@@ -45,4 +46,8 @@ public class TestSpringConfiguration {
     @Bean
     @Primary
     public UserService userService() { return mock(UserService.class); }
+
+    @Bean
+    @Primary
+    public AuthClient authClient() { return mock(AuthClient.class); }
 }

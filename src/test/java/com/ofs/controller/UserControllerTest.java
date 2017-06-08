@@ -40,7 +40,7 @@ public class UserControllerTest extends WebIntegrationTestbootstrap {
 
     @Test
     public void createUser_happyPathSucceeds() throws Exception {
-        when(authenticationClient.authenticate(any())).thenReturn(generateJWTServerSubject());
+        when(authClient.authenticate(any(), any())).thenReturn(generateJWTServerSubject());
         HttpHeaders headers = createHeaders("123");
         headers.setContentType(MediaType.APPLICATION_JSON);
 
@@ -53,7 +53,7 @@ public class UserControllerTest extends WebIntegrationTestbootstrap {
 
     @Test
     public void getUser_happyPathSuccceeds() throws Exception {
-        when(authenticationClient.authenticate(any())).thenReturn(generateJWTServerSubject());
+        when(authClient.authenticate(any(), any())).thenReturn(generateJWTServerSubject());
         when(userService.getUserById(any())).thenReturn(generateResponseUser());
 
         HttpHeaders headers = createHeaders("123");
@@ -65,7 +65,7 @@ public class UserControllerTest extends WebIntegrationTestbootstrap {
 
     @Test
     public void getUserByToken_happyPathSuccceeds() throws Exception {
-        when(authenticationClient.authenticate(any())).thenReturn(generateJWTServerSubject());
+        when(authClient.authenticate(any(), any())).thenReturn(generateJWTServerSubject());
         when(userService.getUserById(any())).thenReturn(generateResponseUser());
 
         HttpHeaders headers = createHeaders("123");
@@ -87,7 +87,7 @@ public class UserControllerTest extends WebIntegrationTestbootstrap {
 
     @Test
     public void deleteUser_happyPathSucceeds() {
-        when(authenticationClient.authenticate(any())).thenReturn(generateJWTServerSubject());
+        when(authClient.authenticate(any(), any())).thenReturn(generateJWTServerSubject());
 
         HttpHeaders headers = createHeaders("123");
         HttpEntity<String> entity = new HttpEntity<>(headers);
@@ -99,7 +99,7 @@ public class UserControllerTest extends WebIntegrationTestbootstrap {
     @Test
     public void updateUser_happyPathSucceeds() throws Exception {
         when(userRepository.getUserById(anyString())).thenReturn(Optional.of(generateResponseUser()));
-        when(authenticationClient.authenticate(any())).thenReturn(generateJWTServerSubject());
+        when(authClient.authenticate(any(), any())).thenReturn(generateJWTServerSubject());
 
         HttpHeaders headers = createHeaders("123");
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -122,7 +122,7 @@ public class UserControllerTest extends WebIntegrationTestbootstrap {
 
     @Test
     public void getUsersByCompanyId_happyPathSucceeds() throws Exception {
-        when(authenticationClient.authenticate(any())).thenReturn(generateJWTServerSubject());
+        when(authClient.authenticate(any(), any())).thenReturn(generateJWTServerSubject());
         when(userRepository.getUsersByCompanyId(anyString())).thenReturn(Optional.of(generateUserList()));
 
         HttpHeaders headers = createHeaders("123");
