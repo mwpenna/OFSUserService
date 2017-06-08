@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.ofs.server.filter.views.SystemAdmin;
 import com.ofs.server.model.BaseOFSEntity;
+import com.ofs.server.model.OFSEntity;
+import com.ofs.server.utils.Dates;
 import com.ofs.utils.StringUtils;
 
 import lombok.Data;
@@ -14,7 +16,7 @@ import java.util.Map;
 import java.util.UUID;
 
 @Data
-public class User extends BaseOFSEntity {
+public class User implements OFSEntity {
 
     public enum Role {
         SYSTEM_ADMIN,
@@ -28,7 +30,10 @@ public class User extends BaseOFSEntity {
     }
 
     public User(URI href) {
-        super(href);
+        this();
+        this.href = href;
+        this.createdOn = Dates.now();
+        this.id = UUID.fromString(this.getIdFromHref());
     }
 
     public  User(Map map) {
@@ -58,6 +63,8 @@ public class User extends BaseOFSEntity {
     private String userName;
     private String emailAddress;
     private boolean activeFlag;
+    private URI href;
+    private ZonedDateTime createdOn;
 
     @JsonView(SystemAdmin.class)
     private ZonedDateTime tokenExpDate;
