@@ -103,4 +103,28 @@ class User
         emailAddress: self.emailAddress
     }.to_json
   end
+
+  def search_hash
+    {
+        firstName: self.firstName,
+        lastName: self.lastName,
+        role: self.role,
+        userName: self.userName,
+        password: self.password,
+        activeFlag: self.activeFlag,
+        emailAddress: self.emailAddress
+    }
+  end
+
+  def search_to_json
+    {
+        firstName: self.firstName,
+        lastName: self.lastName,
+        role: self.role,
+        userName: self.userName,
+        password: self.password,
+        activeFlag: self.activeFlag,
+        emailAddress: self.emailAddress
+    }.to_json
+  end
 end

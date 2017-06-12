@@ -2,18 +2,18 @@
 Feature: User list is returned when search user by endpoint is called
 
   Scenario: Bad Request is returned when a request to search for users is received by a user with ACCOUNT_MANAGER role
-    Given A company and multiple users exists with role ACCOUNT_MANAGER
-    When A request to search for users by firstname is received
+    Given A ACCOUNT_MANAGER user exists for a company
+    When A request to search for users is received
     Then the response should have a status of 400
 
   Scenario: Bad Request is returned when a request to search for users is received by a user with WAREHOUSE role
-    Given A company and multiple users exists with role WAREHOUSE
-    When A request to search for users by firstname is received
+    Given A WAREHOUSE user exists for a company
+    When A request to search for users is received
     Then the response should have a status of 400
 
   Scenario: Bad Request is returned when a request to search for users is received by a user with CUSTOMER role
-    Given A company and multiple users exists with role CUSTOMER
-    When A request to search for users by firstname is received
+    Given A CUSTOMER user exists for a company
+    When A request to search for users is received
     Then the response should have a status of 400
 
   Scenario: Bad Request is returned when a request to search for users is received with a search parameter of id
@@ -29,6 +29,26 @@ Feature: User list is returned when search user by endpoint is called
   Scenario: Bad Request is returned when a request to search for users is received with a search parameter of createdOn
     Given A company and multiple users exists
     When A request to search for users by createdOn is received
+    Then the response should have a status of 400
+
+  Scenario: Bad Request is returned when a request to search for users is received with a search parameter of tokenExpDate
+    Given A company and multiple users exists
+    When A request to search for users by tokenExpDate is received
+    Then the response should have a status of 400
+
+  Scenario: Bad Request is returned when a request to search for users is received with a search parameter of token
+    Given A company and multiple users exists
+    When A request to search for users by token is received
+    Then the response should have a status of 400
+
+  Scenario: Bad Request is returned when a request to search for users is received with a search parameter of password
+    Given A company and multiple users exists
+    When A request to search for users by password is received
+    Then the response should have a status of 400
+
+  Scenario: Bad Request is returned when a request to search for users is received with a search parameter of href
+    Given A company and multiple users exists
+    When A request to search for users by href is received
     Then the response should have a status of 400
 
   Scenario: User List is returned when a request to search for users by firstname is received

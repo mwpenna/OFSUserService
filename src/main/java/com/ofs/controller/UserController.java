@@ -208,6 +208,7 @@ public class UserController {
     @PostMapping(value="search")
     @Authenticate
     @CrossOrigin(origins = "*")
+    @ValidationSchema(value = "/user-search.json")
     public List<User> search(OFSServerForm<User> form) throws Exception {
         Subject subject = SecurityContext.getSubject();
         log.debug("Fetching users for company id {}", StringUtils.getIdFromURI(subject.getCompanyHref()));

@@ -1,0 +1,54 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "user",
+  "description": "JSON User Search",
+  "type" : "object",
+  "properties": {
+    "id": {
+      "not": {}
+    },
+    "href": {
+      "not": {}
+    },
+    "createdOn": {
+      "not": {}
+    },
+    "token": {
+      "not": {}
+    },
+    "tokenExpDate": {
+      "not": {}
+    },
+    "activeFlag": {
+      "type": "boolean"
+    },
+    "firstName": {
+      "type": "string"
+    },
+    "lastName": {
+      "type": "string"
+    },
+    "company": {
+      "not" : {}
+    },
+    "role": {
+      "type": "string",
+      "enum": [
+        "ADMIN",
+        "ACCOUNT_MANAGER",
+        "WAREHOUSE",
+        "CUSTOMER"
+      ]
+    },
+    "userName": {
+      "type": "string"
+    },
+    "password": {
+      "not" : {}
+    },
+    "emailAddress": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": true
+}
