@@ -104,7 +104,7 @@ class User
     }.to_json
   end
 
-  def search_hash
+  def search_to_hash
     {
         firstName: self.firstName,
         lastName: self.lastName,
