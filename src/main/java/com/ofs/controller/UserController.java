@@ -200,13 +200,30 @@ public class UserController {
         }
     }
 
+    @ResponseBody
+    @PostMapping(value="search")
+    @Authenticate
+    @CrossOrigin(origins = "*")
+    public List<User> search(OFSServerForm<User> form) throws Exception {
+        Subject subject = SecurityContext.getSubject();
+        log.debug("Fetching users for company id {}", StringUtils.getIdFromURI(subject.getCompanyHref()));
+
+        Optional<List<User>> optionalUser = userRepository.getUsersByCompanyId(StringUtils.getIdFromURI(subject.getCompanyHref()));
+        if(optionalUser.isPresent()) {
+            return form.search(optionalUser.get());
+        }
+        else {
+            return new ArrayList<>();
+        }
+    }
+
     private String encryptPassword(String password) {
         StrongPasswordEncryptor strongPasswordEncryptor = new StrongPasswordEncryptor();
         return strongPasswordEncryptor.encryptPassword(password);
     }
 
     private void defaultUserValues(User user) {
-        user.setActiveFlag(true);
+//        user.setActiveFlag(true);
 
         if(user.getCompany().getId() == null) {
             try {

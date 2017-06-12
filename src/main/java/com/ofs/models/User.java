@@ -62,7 +62,7 @@ public class User implements OFSEntity {
     private Role role;
     private String userName;
     private String emailAddress;
-    private boolean activeFlag;
+    private boolean activeFlag = true;
     private URI href;
     private ZonedDateTime createdOn;
 
