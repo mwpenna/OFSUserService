@@ -64,7 +64,7 @@ Feature: User list is returned when search user by endpoint is called
     And I should see the user search list was returned
 
   Scenario: User List is returned when a request to search for users by role is received
-    Given A company and multiple users exists with similar role
+    Given A company and multiple users exists with role
     When A request to search for users by role is received
     Then the response should have a status of 200
     And I should see the user search list was returned
@@ -82,7 +82,7 @@ Feature: User list is returned when search user by endpoint is called
     And I should see the user search list was returned
 
   Scenario: User List is returned when a request to search for users by activeflag is received
-    Given A company and multiple users exists with similar activeflag
-    When A request to search for users by activeflag is received
+    Given A company and multiple users exists with activeflag
+    When A request to search for users by activeFlag is received
     Then the response should have a status of 200
     And I should see the user search list was returned

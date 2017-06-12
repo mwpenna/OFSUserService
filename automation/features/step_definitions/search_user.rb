@@ -87,6 +87,84 @@ Given(/^A company and multiple users exists with similar (.*?)$/) do |field|
   @user.id = @location.split("/id/").last
 end
 
+Given(/^A company and multiple users exists with role$/) do
+  basic_auth = Base64.encode64( "ofssystemadmin:p@$$Wordofs")
+  authToken = @service_client.get_by_url_with_auth(@service_client.get_base_uri.to_s+"/users/getToken", "Basic "+ basic_auth)['token']
+  company = FactoryGirl.build(:company, name: Faker::Company.name + (SecureRandom.random_number(999) + 1000).to_s)
+  result = @service_client.post_to_url_with_auth("/company", company.create_to_json, "Bearer "+ authToken)
+  href = result.headers['location']
+  @company = FactoryGirl.build(:company, name: company.name, href: href, id: href.split("/id/").last)
+
+  @users = []
+  i = 0;
+
+  @baseSimilarValue = "CUSTOMER"
+
+  rand(2..5).times do
+    i = i + 1
+    name = Faker::Pokemon.name + (SecureRandom.random_number(999) + 1000).to_s
+    email = name + "@pokemon.com"
+    user = FactoryGirl.build(:user, userName: name, emailAddress: email, company_href: @company.href, company_name: @company.name, role: "ADMIN")
+    body = user.create_to_hash
+    body[:role]=@baseSimilarValue
+    result = @service_client.post_to_url_with_auth("/users", body.to_json, "Bearer "+ authToken)
+    user.id = result.headers['location'].split("/id/").last
+    body["id".to_sym] = user.id
+    @users << body
+  end
+
+  name = Faker::Pokemon.name + (SecureRandom.random_number(999) + 1000).to_s
+  email = name + "@pokemon.com"
+  @user = FactoryGirl.build(:user, userName: name, emailAddress: email, company_href: @company.href, company_name: @company.name, role: "ADMIN")
+  @result = @service_client.post_to_url_with_auth("/users", @user.create_to_json, "Bearer "+ authToken)
+  @location = @result.headers['location']
+  basic_auth = Base64.encode64( @user.userName+":"+ @user.password)
+  sleep(1)
+  @authToken = @service_client.get_by_url_with_auth(@service_client.get_base_uri.to_s+"/users/getToken", "Basic "+ basic_auth)['token']
+  @user.id = @location.split("/id/").last
+end
+
+Given(/^A company and multiple users exists with activeflag$/) do
+  basic_auth = Base64.encode64( "ofssystemadmin:p@$$Wordofs")
+  authToken = @service_client.get_by_url_with_auth(@service_client.get_base_uri.to_s+"/users/getToken", "Basic "+ basic_auth)['token']
+  company = FactoryGirl.build(:company, name: Faker::Company.name + (SecureRandom.random_number(999) + 1000).to_s)
+  result = @service_client.post_to_url_with_auth("/company", company.create_to_json, "Bearer "+ authToken)
+  href = result.headers['location']
+  @company = FactoryGirl.build(:company, name: company.name, href: href, id: href.split("/id/").last)
+
+  @users = []
+  i = 0;
+
+  @baseSimilarValue = true
+
+  rand(2..5).times do
+    i = i + 1
+    name = Faker::Pokemon.name + (SecureRandom.random_number(999) + 1000).to_s
+    email = name + "@pokemon.com"
+    user = FactoryGirl.build(:user, userName: name, emailAddress: email, company_href: @company.href, company_name: @company.name, role: "ADMIN")
+    body = user.create_to_hash
+    result = @service_client.post_to_url_with_auth("/users", body.to_json, "Bearer "+ authToken)
+    user.id = result.headers['location'].split("/id/").last
+    body["id".to_sym] = user.id
+    body[:activeFlag]=@baseSimilarValue
+    @users << body
+  end
+
+  name = Faker::Pokemon.name + (SecureRandom.random_number(999) + 1000).to_s
+  email = name + "@pokemon.com"
+  @user = FactoryGirl.build(:user, userName: name, emailAddress: email, company_href: @company.href, company_name: @company.name, role: "ADMIN")
+  @result = @service_client.post_to_url_with_auth("/users", @user.create_to_json, "Bearer "+ authToken)
+  @location = @result.headers['location']
+  basic_auth = Base64.encode64( @user.userName+":"+ @user.password)
+  sleep(1)
+  @authToken = @service_client.get_by_url_with_auth(@service_client.get_base_uri.to_s+"/users/getToken", "Basic "+ basic_auth)['token']
+  @user.id = @location.split("/id/").last
+  user = @user.create_to_hash
+  user[:id] = @user.id
+  user[:activeFlag]=@baseSimilarValue
+  @users << user
+end
+
 Then(/^I should see the user search list was returned$/) do
   expect(@result["count"]).to eql @users.size
   expect(@result["items"].size).to eql @users.size
