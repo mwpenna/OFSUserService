@@ -193,7 +193,7 @@ public class UserController {
         log.debug("Fetching Users for company id {}", id);
 
         OFSErrors errors = new OFSErrors();
-        userGetByCompanyIdValidator.validate(userService.getUserById(StringUtils.getIdFromURI(SecurityContext.getSubject().getHref())), errors);
+        userGetByCompanyIdValidator.validate(User.createUser(SecurityContext.getSubject()), errors);
 
         Optional<List<User>> optionalUser = userRepository.getUsersByCompanyId(id);
         if(optionalUser.isPresent()) {
@@ -213,7 +213,7 @@ public class UserController {
         log.debug("Fetching users for company id {}", StringUtils.getIdFromURI(subject.getCompanyHref()));
 
         OFSErrors errors = new OFSErrors();
-        userSearchValidator.validate(userService.getUserById(StringUtils.getIdFromURI(SecurityContext.getSubject().getHref())), errors);
+        userSearchValidator.validate(User.createUser(subject), errors);
 
         Optional<List<User>> optionalUser = userRepository.getUsersByCompanyId(StringUtils.getIdFromURI(subject.getCompanyHref()));
         if(optionalUser.isPresent()) {

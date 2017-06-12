@@ -5,10 +5,12 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.ofs.server.filter.views.SystemAdmin;
 import com.ofs.server.model.BaseOFSEntity;
 import com.ofs.server.model.OFSEntity;
+import com.ofs.server.security.Subject;
 import com.ofs.server.utils.Dates;
 import com.ofs.utils.StringUtils;
 
 import lombok.Data;
+import org.springframework.stereotype.Component;
 
 import java.net.URI;
 import java.time.ZonedDateTime;
@@ -98,6 +100,26 @@ public class User implements OFSEntity {
         String tokenExpDate = (String) userMap.get("tokenExpDate");
         user.setTokenExpDate(tokenExpDate != null ? ZonedDateTime.parse(tokenExpDate) : null);
         user.setActiveFlag((Boolean) userMap.get("activeFlag"));
+
+        return user;
+    }
+
+    @JsonIgnore
+    public static User createUser(Subject subject) {
+        User user = new User();
+
+        user.setId(UUID.fromString(StringUtils.getIdFromURI(subject.getHref())));
+        user.setFirstName(subject.getFirstName());
+        user.setLastName(subject.getLastName());
+        user.setRole(Role.valueOf(subject.getRole()));
+        user.setUserName(subject.getUserName());
+        user.setEmailAddress(subject.getEmailAddress());
+        user.setToken(subject.getToken());
+
+        Company company = new Company();
+        company.setHref(subject.getCompanyHref());
+        company.setId(UUID.fromString(StringUtils.getIdFromURI(subject.getCompanyHref())));
+        user.setCompany(company);
 
         return user;
     }
