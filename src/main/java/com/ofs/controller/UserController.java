@@ -26,6 +26,7 @@ import com.ofs.validators.user.UserGetByCompanyIdValidator;
 import com.ofs.validators.user.UserGetTokenValidator;
 import com.ofs.validators.user.UserCreateValidator;
 
+import com.ofs.validators.user.UserSearchValidator;
 import com.ofs.validators.user.UserUpdateValidator;
 import lombok.extern.slf4j.Slf4j;
 
@@ -75,6 +76,9 @@ public class UserController {
 
     @Autowired
     private UserGetByCompanyIdValidator userGetByCompanyIdValidator;
+
+    @Autowired
+    private UserSearchValidator userSearchValidator;
 
     @Autowired
     GlobalConfigs globalConfigs;
@@ -207,6 +211,9 @@ public class UserController {
     public List<User> search(OFSServerForm<User> form) throws Exception {
         Subject subject = SecurityContext.getSubject();
         log.debug("Fetching users for company id {}", StringUtils.getIdFromURI(subject.getCompanyHref()));
+
+        OFSErrors errors = new OFSErrors();
+        userSearchValidator.validate(userService.getUserById(StringUtils.getIdFromURI(SecurityContext.getSubject().getHref())), errors);
 
         Optional<List<User>> optionalUser = userRepository.getUsersByCompanyId(StringUtils.getIdFromURI(subject.getCompanyHref()));
         if(optionalUser.isPresent()) {

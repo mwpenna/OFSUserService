@@ -6,10 +6,11 @@ import com.ofs.server.model.OFSErrors;
 import com.ofs.server.security.SecurityContext;
 import com.ofs.server.security.Subject;
 import com.ofs.validations.UserGetByCompanyId;
+import com.ofs.validations.UserSearchValidation;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ValidateGetUsers implements UserGetByCompanyId{
+public class ValidateGetUsers implements UserGetByCompanyId, UserSearchValidation{
     @Override
     public void validate(User user, OFSErrors errors) throws Exception {
         Subject subject = SecurityContext.getSubject();
