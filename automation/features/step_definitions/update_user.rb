@@ -19,7 +19,7 @@ end
 
 When(/^A request to update the user tokenExpDate$/) do
   authToken = @user.token
-  @user = FactoryGirl.build(:user,  company_href: @company.href, company_name: @company.name)
+  @user = FactoryGirl.build(:user, emailAddress: @user.emailAddress,  company_href: @company.href, company_name: @company.name)
   body = @user.update_to_hash
   @updatedValue = DateTime.now.strftime "%Y-%m-%dT%H:%M:%SZ"
   body["tokenExpDate"]=@updatedValue
@@ -35,7 +35,7 @@ end
 
 When(/^A request to update the user activeFlag$/) do
   authToken = @user.token
-  @user = FactoryGirl.build(:user,  company_href: @company.href, company_name: @company.name)
+  @user = FactoryGirl.build(:user, emailAddress: @user.emailAddress,  company_href: @company.href, company_name: @company.name)
   body = @user.update_to_hash
   @updatedValue = false
   body["activeFlag"]=@updatedValue
@@ -44,7 +44,7 @@ end
 
 When(/^A request to update the user firstName$/) do
   authToken = @user.token
-  @user = FactoryGirl.build(:user,  company_href: @company.href, company_name: @company.name)
+  @user = FactoryGirl.build(:user, emailAddress: @user.emailAddress,  company_href: @company.href, company_name: @company.name)
   body = @user.update_to_hash
   @updatedValue = "test"
   body["firstName"]=@updatedValue
@@ -53,7 +53,7 @@ end
 
 When(/^A request to update the user lastName$/) do
   authToken = @user.token
-  @user = FactoryGirl.build(:user,  company_href: @company.href, company_name: @company.name)
+  @user = FactoryGirl.build(:user, emailAddress: @user.emailAddress,  company_href: @company.href, company_name: @company.name)
   body = @user.update_to_hash
   @updatedValue = "test"
   body["lastName"]=@updatedValue
@@ -62,7 +62,7 @@ end
 
 When(/^A request to update the user role$/) do
   authToken = @user.token
-  @user = FactoryGirl.build(:user,  company_href: @company.href, company_name: @company.name)
+  @user = FactoryGirl.build(:user, emailAddress: @user.emailAddress,  company_href: @company.href, company_name: @company.name)
   body = @user.update_to_hash
   @updatedValue = "ADMIN"
   body["role"]=@updatedValue
@@ -71,7 +71,7 @@ end
 
 When(/^A request to update the user role with invalid role$/) do
   authToken = @user.token
-  @user = FactoryGirl.build(:user,  company_href: @company.href, company_name: @company.name)
+  @user = FactoryGirl.build(:user, emailAddress: @user.emailAddress,  company_href: @company.href, company_name: @company.name)
   body = @user.update_to_hash
   body["role"]="TEST"
   @result = @service_client.post_to_url_with_auth("/users/id/"+ @location.split("/id/").last, body.to_json, "Bearer " + @authToken)
@@ -83,7 +83,7 @@ end
 
 When(/^A request to update the user password$/) do
   authToken = @user.token
-  @user = FactoryGirl.build(:user,  company_href: @company.href, company_name: @company.name)
+  @user = FactoryGirl.build(:user, emailAddress: @user.emailAddress,  company_href: @company.href, company_name: @company.name)
   body = @user.update_to_hash
   @updatedValue = "test"
   body["password$"]=@updatedValue
@@ -92,9 +92,9 @@ end
 
 When(/^A request to update the user emailAddress$/) do
   authToken = @user.token
-  @user = FactoryGirl.build(:user,  company_href: @company.href, company_name: @company.name)
+  @user = FactoryGirl.build(:user, emailAddress: @user.emailAddress,  company_href: @company.href, company_name: @company.name)
   body = @user.update_to_hash
-  @updatedValue = "test@test.com"
+  @updatedValue = "test"+ (SecureRandom.random_number(999) + 1000).to_s + "@test.com"
   body["emailAddress"]=@updatedValue
   @result = @service_client.post_to_url_with_auth("/users/id/"+ @location.split("/id/").last, body.to_json, "Bearer " + @authToken)
 end
@@ -107,15 +107,15 @@ end
 When(/^A request to update the user emailAddress is received by SYSTEM_ADMIN$/) do
   basic_auth = Base64.encode64( "ofssystemadmin:p@$$Wordofs")
   authToken = @service_client.get_by_url_with_auth(@service_client.get_base_uri.to_s+"/users/getToken", "Basic "+ basic_auth)['token']
-  @user = FactoryGirl.build(:user,  company_href: @company.href, company_name: @company.name)
+  @user = FactoryGirl.build(:user, emailAddress: @user.emailAddress, company_href: @company.href, company_name: @company.name)
   body = @user.update_to_hash
-  @updatedValue = "test@test.com"
+  @updatedValue = "test"+ (SecureRandom.random_number(999) + 1000).to_s + "@test.com"
   body["emailAddress"]=@updatedValue
   @result = @service_client.post_to_url_with_auth("/users/id/"+ @location.split("/id/").last, body.to_json, "Bearer " + @authToken)
 end
 
 When(/^A request to update the user is received by the ADMIN user for a different company$/) do
-  @user = FactoryGirl.build(:user,  company_href: @company.href, company_name: @company.name)
+  @user = FactoryGirl.build(:user, emailAddress: @user.emailAddress,  company_href: @company.href, company_name: @company.name)
   body = @user.update_to_hash
   @updatedValue = "test@test.com"
   body["emailAddress"]=@updatedValue
@@ -123,9 +123,9 @@ When(/^A request to update the user is received by the ADMIN user for a differen
 end
 
 When(/^A request to update the users emailAddress is received$/) do
-  @user = FactoryGirl.build(:user,  company_href: @company.href, company_name: @company.name)
+  @user = FactoryGirl.build(:user, emailAddress: @user.emailAddress, company_href: @company.href, company_name: @company.name)
   body = @user.update_to_hash
-  @updatedValue = "test@test.com"
+  @updatedValue = "test"+ (SecureRandom.random_number(999) + 1000).to_s + "@test.com"
   body["emailAddress"]=@updatedValue
   @result = @service_client.post_to_url_with_auth("/users/id/"+ @location.split("/id/").last, body.to_json, "Bearer " + @authToken)
 end
