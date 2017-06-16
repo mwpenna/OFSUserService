@@ -133,10 +133,10 @@ public class UserController {
         if(userOptional.isPresent()) {
             User user = userOptional.get();
 
-            OFSErrors errors = new OFSErrors();
-            updateValidator.validate(user, errors);
-
             ChangeSet changeSet = form.update(user);
+
+            OFSErrors errors = new OFSErrors();
+            updateValidator.validate(changeSet, user, errors);
 
             if(changeSet.size()>0) {
                 if(changeSet.contains("password")) {

@@ -17,8 +17,7 @@ end
 When(/^A request to authenticate the user with expired JWT token$/) do
   basic_auth = Base64.encode64( @user.userName + ":" + @user.password)
   token = @service_client.get_by_url_with_auth(@service_client.get_base_uri.to_s+"/users/getToken", "Basic "+ basic_auth)['token']
-
-  updateUser = FactoryGirl.build(:user,  company_href: @company.href, company_name: @company.name)
+  updateUser = FactoryGirl.build(:user, emailAddress:@user.emailAddress, company_href: @company.href, company_name: @company.name)
   body = updateUser.update_to_hash
   body["tokenExpDate"]=(DateTime.now - (25/1440.0)).strftime "%Y-%m-%dT%H:%M:%SZ"
   @service_client.post_to_url_with_auth("/users/id/"+ @location.split("/id/").last, body.to_json, "Bearer "+token)

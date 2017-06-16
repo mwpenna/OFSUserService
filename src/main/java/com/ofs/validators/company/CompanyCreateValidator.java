@@ -2,6 +2,7 @@ package com.ofs.validators.company;
 
 import com.ofs.models.Company;
 import com.ofs.server.errors.BadRequestException;
+import com.ofs.server.form.update.ChangeSet;
 import com.ofs.server.model.OFSErrors;
 import com.ofs.validations.CompanyCreateValidation;
 import com.ofs.validators.Validator;
@@ -27,6 +28,17 @@ public class CompanyCreateValidator implements Validator<Company> {
     public void validate(Company company, OFSErrors errors) throws Exception {
         for (CompanyCreateValidation validation : VALIDATIONS) {
             validation.validate(company, errors);
+        }
+
+        if(!errors.isEmpty()) {
+            throw new BadRequestException(errors);
+        }
+    }
+
+    @Override
+    public void validate(ChangeSet changeSet, Company company, OFSErrors errors) throws Exception {
+        for (CompanyCreateValidation validation : VALIDATIONS) {
+            validation.validate(changeSet, company, errors);
         }
 
         if(!errors.isEmpty()) {

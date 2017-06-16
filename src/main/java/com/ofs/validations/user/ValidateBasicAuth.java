@@ -3,6 +3,7 @@ package com.ofs.validations.user;
 import com.ofs.models.BasicAuthUser;
 import com.ofs.models.User;
 import com.ofs.repository.UserRepository;
+import com.ofs.server.form.update.ChangeSet;
 import com.ofs.server.model.OFSErrors;
 import com.ofs.validations.UserGetTokenValidation;
 import org.jasypt.util.password.StrongPasswordEncryptor;
@@ -35,5 +36,10 @@ public class ValidateBasicAuth implements UserGetTokenValidation {
         else {
             errors.rejectValue("user.authentication.failed", "Username/Password is not valid. Please retry with correct credentials.");
         }
+    }
+
+    @Override
+    public void validate(ChangeSet changeSet, BasicAuthUser basicAuthUser, OFSErrors errors) throws Exception {
+        validate(basicAuthUser, errors);
     }
 }

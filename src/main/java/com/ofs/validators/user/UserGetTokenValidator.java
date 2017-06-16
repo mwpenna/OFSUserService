@@ -2,6 +2,7 @@ package com.ofs.validators.user;
 
 import com.ofs.models.BasicAuthUser;
 import com.ofs.server.errors.BadRequestException;
+import com.ofs.server.form.update.ChangeSet;
 import com.ofs.server.model.OFSErrors;
 import com.ofs.validations.UserGetTokenValidation;
 import com.ofs.validators.Validator;
@@ -26,6 +27,17 @@ public class UserGetTokenValidator implements Validator<BasicAuthUser> {
     public void validate(BasicAuthUser basicAuthUser, OFSErrors errors) throws Exception {
         for(UserGetTokenValidation validation : VALIDATIONS) {
             validation.validate(basicAuthUser, errors);
+        }
+
+        if(!errors.isEmpty()) {
+            throw new BadRequestException(errors);
+        }
+    }
+
+    @Override
+    public void validate(ChangeSet changeSet, BasicAuthUser basicAuthUser, OFSErrors errors) throws Exception {
+        for(UserGetTokenValidation validation : VALIDATIONS) {
+            validation.validate(changeSet, basicAuthUser, errors);
         }
 
         if(!errors.isEmpty()) {
