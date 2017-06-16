@@ -149,3 +149,10 @@ Feature: User is updated when update user endpoint is called
     When A request to update the users emailAddress is received
     Then the response should have a status of 204
     And I should see the emailAddress was updated
+
+  Scenario: When a request to update an email adress is received with a duplicate email address a bad request should be returned indicating the email address is duplicated
+    Given A ADMIN user exists for a company
+    And A user exists for the ADMIN company
+    When A request to update the users emailAddress with duplicate email is received
+    Then the response should have a status of 400
+    And I should see an error message with duplicate emailAddress

@@ -130,6 +130,7 @@ Given(/^A (.*?) user exists for a company$/) do |property|
   name = Faker::Pokemon.name + (SecureRandom.random_number(999) + 1000).to_s
   email = name + "@pokemon.com"
   @user = FactoryGirl.build(:user, userName: name, emailAddress: email, company_href: @company.href, company_name: @company.name, role: property)
+  @duplicateEmail = @user.emailAddress
   @result = @service_client.post_to_url_with_auth("/users", @user.create_to_json, "Bearer "+ authToken)
   @location = @result.headers['location']
   sleep(1)

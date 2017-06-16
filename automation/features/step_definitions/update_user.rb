@@ -130,6 +130,14 @@ When(/^A request to update the users emailAddress is received$/) do
   @result = @service_client.post_to_url_with_auth("/users/id/"+ @location.split("/id/").last, body.to_json, "Bearer " + @authToken)
 end
 
+When(/^A request to update the users emailAddress with duplicate email is received$/) do
+  @user = FactoryGirl.build(:user, emailAddress: @user.emailAddress, company_href: @company.href, company_name: @company.name)
+  body = @user.update_to_hash
+  @updatedValue = @duplicateEmail
+  body["emailAddress"]=@updatedValue
+  @result = @service_client.post_to_url_with_auth("/users/id/"+ @location.split("/id/").last, body.to_json, "Bearer " + @authToken)
+end
+
 When(/^A request to update a different user is received$/) do
   @user = FactoryGirl.build(:user,  company_href: @company.href, company_name: @company.name)
   body = @user.update_to_hash
